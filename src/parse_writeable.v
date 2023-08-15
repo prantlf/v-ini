@@ -7,21 +7,21 @@ mut:
 	section string
 }
 
-pub fn WriteableIni.parse(source string) !&WriteableIni {
-	return WriteableIni.parse_opt(source, ParseOpts{})!
+pub fn parse_writeable(source string) !&WriteableIni {
+	return parse_writeable_opt(source, ParseOpts{})!
 }
 
-pub fn WriteableIni.parse_opt(source string, opts &ParseOpts) !&WriteableIni {
+pub fn parse_writeable_opt(source string, opts &ParseOpts) !&WriteableIni {
 	mut ini := &WriteableIni{}
-	WriteableIni.parse_to_opt(source, mut ini, opts)!
+	parse_writeable_to_opt(source, mut ini, opts)!
 	return ini
 }
 
-pub fn WriteableIni.parse_to(source string, mut ini WriteableIni) ! {
-	WriteableIni.parse_to_opt(source, mut ini, ParseOpts{})!
+pub fn parse_writeable_to(source string, mut ini WriteableIni) ! {
+	parse_writeable_to_opt(source, mut ini, ParseOpts{})!
 }
 
-pub fn WriteableIni.parse_to_opt(source string, mut ini WriteableIni, opts &ParseOpts) ! {
+pub fn parse_writeable_to_opt(source string, mut ini WriteableIni, opts &ParseOpts) ! {
 	mut p := &WriteableParser{
 		opts: unsafe { opts }
 		ini: unsafe { ini }

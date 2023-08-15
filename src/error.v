@@ -4,6 +4,7 @@ import os
 import strings
 import term
 
+[noinit]
 pub struct ParseError {
 	Error
 	head_context string

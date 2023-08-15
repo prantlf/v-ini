@@ -40,6 +40,44 @@ pub fn decode_to_opt[T, I](ini &I, mut obj T, opts &DecodeOpts) ! {
 	decode_sects[T, I](mut obj, ini, opts)!
 }
 
+pub fn decode_readable[T](ini &ReadableIni) !T {
+	return decode_readable_opt[T](ini, &DecodeOpts{})!
+}
+
+pub fn decode_readable_opt[T](ini &ReadableIni, opts &DecodeOpts) !T {
+	mut obj := T{}
+	decode_readable_to_opt[T](ini, mut obj, opts)!
+	return obj
+}
+
+pub fn decode_readable_to[T](ini &ReadableIni, mut obj T) ! {
+	decode_readable_to_opt[T](ini, mut obj, &DecodeOpts{})!
+}
+
+pub fn decode_readable_to_opt[T](ini &ReadableIni, mut obj T, opts &DecodeOpts) ! {
+	decode_props[T, ReadableIni](mut obj, ini, ini.globals, opts)!
+	decode_sects[T, ReadableIni](mut obj, ini, opts)!
+}
+
+pub fn decode_writeable[T](ini &WriteableIni) !T {
+	return decode_writeable_opt[T](ini, &DecodeOpts{})!
+}
+
+pub fn decode_writeable_opt[T](ini &WriteableIni, opts &DecodeOpts) !T {
+	mut obj := T{}
+	decode_writeable_to_opt[T](ini, mut obj, opts)!
+	return obj
+}
+
+pub fn decode_writeable_to[T](ini &WriteableIni, mut obj T) ! {
+	decode_writeable_to_opt[T](ini, mut obj, &DecodeOpts{})!
+}
+
+pub fn decode_writeable_to_opt[T](ini &WriteableIni, mut obj T, opts &DecodeOpts) ! {
+	decode_props[T, WriteableIni](mut obj, ini, ini.globals, opts)!
+	decode_sects[T, WriteableIni](mut obj, ini, opts)!
+}
+
 fn decode_props[T, I](mut typ T, ini &I, props voidptr, opts &DecodeOpts) ! {
 	if opts.forbid_extra_keys {
 		props_len := ini.get_props_len(props)

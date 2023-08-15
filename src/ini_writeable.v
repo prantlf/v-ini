@@ -1,5 +1,6 @@
 module ini
 
+[heap; noinit]
 pub struct WriteableIni {
 pub mut:
 	globals  map[string]string

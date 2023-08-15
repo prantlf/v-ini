@@ -23,10 +23,10 @@ pub fn unmarshal_to[T](source string, mut obj T) ! {
 }
 
 pub fn unmarshal_to_opt[T](source string, mut obj T, opts &UnmarshalOpts) ! {
-	ini := ReadableIni.parse_opt(source, ParseOpts{
+	ini := parse_readable_opt(source, ParseOpts{
 		preserve_whitespace: opts.preserve_whitespace
 	})!
-	decode_to_opt[T, ReadableIni](ini, mut obj, DecodeOpts{
+	decode_readable_to_opt[T](ini, mut obj, DecodeOpts{
 		require_all_fields: opts.require_all_fields
 		forbid_extra_keys: opts.forbid_extra_keys
 		ignore_number_overflow: opts.ignore_number_overflow

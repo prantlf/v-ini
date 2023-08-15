@@ -7,11 +7,11 @@ mut:
 	section &Section     = unsafe { nil }
 }
 
-pub fn ReadableIni.parse(source string) !&ReadableIni {
-	return ReadableIni.parse_opt(source, ParseOpts{})!
+pub fn parse_readable(source string) !&ReadableIni {
+	return parse_readable_opt(source, ParseOpts{})!
 }
 
-pub fn ReadableIni.parse_opt(source string, opts &ParseOpts) !&ReadableIni {
+pub fn parse_readable_opt(source string, opts &ParseOpts) !&ReadableIni {
 	mut ini := &ReadableIni{
 		source: source
 	}

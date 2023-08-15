@@ -1,7 +1,7 @@
 module ini
 
 fn test_parse_end_before_property_name() {
-	ReadableIni.parse('=') or {
+	parse_readable('=') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected "=" encountered when expecting a property name on line 1, column 1'
 			assert err.msg_full() == 'unexpected "=" encountered when expecting a property name:
@@ -16,7 +16,7 @@ fn test_parse_end_before_property_name() {
 }
 
 fn test_parse_end_in_property_name() {
-	ReadableIni.parse('test') or {
+	parse_readable('test') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected end encountered when parsing a property name on line 1, column 5'
 			assert err.msg_full() == 'unexpected end encountered when parsing a property name:
@@ -31,7 +31,7 @@ fn test_parse_end_in_property_name() {
 }
 
 fn test_parse_eoln_in_property_name() {
-	ReadableIni.parse('test
+	parse_readable('test
 ') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected line break encountered when parsing a property name on line 1, column 5'
@@ -47,7 +47,7 @@ fn test_parse_eoln_in_property_name() {
 }
 
 fn test_parse_end_after_property_name_1() {
-	ReadableIni.parse('test ') or {
+	parse_readable('test ') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected end encountered after a property name on line 1, column 6'
 			assert err.msg_full() == 'unexpected end encountered after a property name:
@@ -62,7 +62,7 @@ fn test_parse_end_after_property_name_1() {
 }
 
 fn test_parse_end_after_property_name_2() {
-	ReadableIni.parse('test 
+	parse_readable('test 
 ') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected line break encountered after a property name on line 1, column 6'
@@ -78,7 +78,7 @@ fn test_parse_end_after_property_name_2() {
 }
 
 fn test_parse_unexpected_after_property_name() {
-	ReadableIni.parse('test *') or {
+	parse_readable('test *') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected "*" encountered when expecting "=" on line 1, column 6'
 			assert err.msg_full() == 'unexpected "*" encountered when expecting "=":
@@ -93,7 +93,7 @@ fn test_parse_unexpected_after_property_name() {
 }
 
 fn test_parse_end_before_section_name_1() {
-	ReadableIni.parse('[') or {
+	parse_readable('[') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected end encountered before a section name on line 1, column 2'
 			assert err.msg_full() == 'unexpected end encountered before a section name:
@@ -108,7 +108,7 @@ fn test_parse_end_before_section_name_1() {
 }
 
 fn test_parse_end_before_section_name_2() {
-	ReadableIni.parse('[ ') or {
+	parse_readable('[ ') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected end encountered before a section name on line 1, column 3'
 			assert err.msg_full() == 'unexpected end encountered before a section name:
@@ -123,7 +123,7 @@ fn test_parse_end_before_section_name_2() {
 }
 
 fn test_parse_end_before_section_name_3() {
-	ReadableIni.parse('[
+	parse_readable('[
 ') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected line break encountered when parsing a section name on line 1, column 2'
@@ -139,7 +139,7 @@ fn test_parse_end_before_section_name_3() {
 }
 
 fn test_parse_empty_section_name() {
-	ReadableIni.parse('[]') or {
+	parse_readable('[]') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected "]" encountered when expecting a section name on line 1, column 2'
 			assert err.msg_full() == 'unexpected "]" encountered when expecting a section name:
@@ -154,7 +154,7 @@ fn test_parse_empty_section_name() {
 }
 
 fn test_parse_whitespace_section_name() {
-	ReadableIni.parse('[ ]') or {
+	parse_readable('[ ]') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected "]" encountered when expecting a section name on line 1, column 3'
 			assert err.msg_full() == 'unexpected "]" encountered when expecting a section name:
@@ -169,7 +169,7 @@ fn test_parse_whitespace_section_name() {
 }
 
 fn test_parse_unfinished_section_name_1() {
-	ReadableIni.parse('[test') or {
+	parse_readable('[test') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected end encountered when parsing a section name on line 1, column 6'
 			assert err.msg_full() == 'unexpected end encountered when parsing a section name:
@@ -184,7 +184,7 @@ fn test_parse_unfinished_section_name_1() {
 }
 
 fn test_parse_unfinished_section_name_2() {
-	ReadableIni.parse('[test 
+	parse_readable('[test 
 ') or {
 		if err is ParseError {
 			assert err.msg() == 'unexpected line break encountered after a section name on line 1, column 7'

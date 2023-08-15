@@ -14,17 +14,16 @@ See also the [INI file grammar].
 ## Synopsis
 
 ```go
-import prantlf.ini { ReadableIni, unmarshal, decode }
+import prantlf.ini { parse_readable, unmarshal, decode }
 
-ini := ReadableIni.parse('answer=42')!
+ini := parse_readable('answer=42')!
 assert ini.global_val('answer')? == '42'
 
 struct Cfg {
   answer int
 }
 
-// cfg := unmarshal[Cfg]('answer=42')!
-cfg := decode[Cfg, ReadableIni](ini)!
+cfg := unmarshal[Cfg]('answer=42')!
 assert cfg.answer == 42
 ```
 
@@ -86,18 +85,28 @@ The following types, functions and methods are exported:
     WriteableIni.from_sections_map(sections map[string]map[string]string) &WriteableIni
     WriteableIni.from_both_maps(globals map[string]string, sections map[string]map[string]string) &WriteableIni
 
-    ReadableIni.parse(source string) !&ReadableIni
-    ReadableIni.parse_opt(source string, opts &ParseOpts) !&ReadableIni
+    parse_readable(source string) !&ReadableIni
+    parse_readable_opt(source string, opts &ParseOpts) !&ReadableIni
 
-    WriteableIni.parse(source string) !&WriteableIni
-    WriteableIni.parse_opt(source string, opts &ParseOpts) !&WriteableIni
-    WriteableIni.parse_to(source string, mut ini WriteableIni) !
-    WriteableIni.parse_to_opt(source string, mut ini WriteableIni, opts &ParseOpts) !
+    parse_writeable(source string) !&WriteableIni
+    parse_writeable_opt(source string, opts &ParseOpts) !&WriteableIni
+    parse_writeable_to(source string, mut ini WriteableIni) !
+    parse_writeable_to_opt(source string, mut ini WriteableIni, opts &ParseOpts) !
 
     decode[T, I](ini &I) !T
     decode_opt[T, I](ini &I, opts &DecodeOpts) !T
     decode_to[T, I](ini &I, mut obj T) !
     decode_to_opt[T, I](ini &I, mut obj T, opts &DecodeOpts) !
+
+    decode_readable[T](ini &ReadableIni) !T
+    decode_readable_opt[T](ini &ReadableIni, opts &DecodeOpts) !T
+    decode_readable_to[T](ini &ReadableIni, mut obj T) !
+    decode_readable_to_opt[T](ini &ReadableIni, mut obj T, opts &DecodeOpts) !
+
+    decode_writeable[T](ini &WriteableIni) !T
+    decode_writeable_opt[T](ini &WriteableIni, opts &DecodeOpts) !T
+    decode_writeable_to[T](ini &WriteableIni, mut obj T) !
+    decode_writeable_to_opt[T](ini &WriteableIni, mut obj T, opts &DecodeOpts) !
 
     unmarshal[T](source string) !T
     unmarshal_opt[T](source string, opts &UnmarshalOpts) !T
