@@ -20,7 +20,7 @@ fn (p &Parser) fail(offset int, msg string) ParseError {
 		tail_error: tail_error
 		tail_context: tail_context
 		offset: offset + 1
-		line: p.line_start + 1
+		line: p.line + 1
 		column: offset - p.line_start + 1
 	}
 }
