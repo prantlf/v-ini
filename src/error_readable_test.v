@@ -16,12 +16,14 @@ fn test_parse_end_before_property_name() {
 }
 
 fn test_parse_end_in_property_name() {
-	parse_readable('test') or {
+	parse_readable('answer=42
+question') or {
 		if err is ParseError {
-			assert err.msg() == 'unexpected end encountered when parsing a property name on line 1, column 5'
+			assert err.msg() == 'unexpected end encountered when parsing a property name on line 2, column 9'
 			assert err.msg_full() == 'unexpected end encountered when parsing a property name:
- 1 | test
-   |     ^'
+ 1 | answer=42
+ 2 | question
+   |         ^'
 		} else {
 			assert false
 		}

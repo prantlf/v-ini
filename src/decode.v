@@ -21,67 +21,67 @@ pub:
 	preserve_whitespace    bool
 }
 
-pub fn decode[T, I](ini &I) !T {
-	return decode_opt[T, I](ini, &DecodeOpts{})!
+pub fn decode[T, I](i &I) !T {
+	return decode_opt[T, I](i, &DecodeOpts{})!
 }
 
-pub fn decode_opt[T, I](ini &I, opts &DecodeOpts) !T {
+pub fn decode_opt[T, I](i &I, opts &DecodeOpts) !T {
 	mut obj := T{}
-	decode_to_opt[T, I](ini, mut obj, opts)!
+	decode_to_opt[T, I](i, mut obj, opts)!
 	return obj
 }
 
-pub fn decode_to[T, I](ini &I, mut obj T) ! {
-	decode_to_opt[T, I](ini, mut obj, &DecodeOpts{})!
+pub fn decode_to[T, I](i &I, mut obj T) ! {
+	decode_to_opt[T, I](i, mut obj, &DecodeOpts{})!
 }
 
-pub fn decode_to_opt[T, I](ini &I, mut obj T, opts &DecodeOpts) ! {
-	decode_props[T, I](mut obj, ini, ini.globals, opts)!
-	decode_sects[T, I](mut obj, ini, opts)!
+pub fn decode_to_opt[T, I](i &I, mut obj T, opts &DecodeOpts) ! {
+	decode_props[T, I](mut obj, i, i.globals, opts)!
+	decode_sects[T, I](mut obj, i, opts)!
 }
 
-pub fn decode_readable[T](ini &ReadableIni) !T {
-	return decode_readable_opt[T](ini, &DecodeOpts{})!
+pub fn decode_readable[T](i &ReadableIni) !T {
+	return decode_readable_opt[T](i, &DecodeOpts{})!
 }
 
-pub fn decode_readable_opt[T](ini &ReadableIni, opts &DecodeOpts) !T {
+pub fn decode_readable_opt[T](i &ReadableIni, opts &DecodeOpts) !T {
 	mut obj := T{}
-	decode_readable_to_opt[T](ini, mut obj, opts)!
+	decode_readable_to_opt[T](i, mut obj, opts)!
 	return obj
 }
 
-pub fn decode_readable_to[T](ini &ReadableIni, mut obj T) ! {
-	decode_readable_to_opt[T](ini, mut obj, &DecodeOpts{})!
+pub fn decode_readable_to[T](i &ReadableIni, mut obj T) ! {
+	decode_readable_to_opt[T](i, mut obj, &DecodeOpts{})!
 }
 
-pub fn decode_readable_to_opt[T](ini &ReadableIni, mut obj T, opts &DecodeOpts) ! {
-	decode_props[T, ReadableIni](mut obj, ini, ini.globals, opts)!
-	decode_sects[T, ReadableIni](mut obj, ini, opts)!
+pub fn decode_readable_to_opt[T](i &ReadableIni, mut obj T, opts &DecodeOpts) ! {
+	decode_props[T, ReadableIni](mut obj, i, i.globals, opts)!
+	decode_sects[T, ReadableIni](mut obj, i, opts)!
 }
 
-pub fn decode_writeable[T](ini &WriteableIni) !T {
-	return decode_writeable_opt[T](ini, &DecodeOpts{})!
+pub fn decode_writeable[T](i &WriteableIni) !T {
+	return decode_writeable_opt[T](i, &DecodeOpts{})!
 }
 
-pub fn decode_writeable_opt[T](ini &WriteableIni, opts &DecodeOpts) !T {
+pub fn decode_writeable_opt[T](i &WriteableIni, opts &DecodeOpts) !T {
 	mut obj := T{}
-	decode_writeable_to_opt[T](ini, mut obj, opts)!
+	decode_writeable_to_opt[T](i, mut obj, opts)!
 	return obj
 }
 
-pub fn decode_writeable_to[T](ini &WriteableIni, mut obj T) ! {
-	decode_writeable_to_opt[T](ini, mut obj, &DecodeOpts{})!
+pub fn decode_writeable_to[T](i &WriteableIni, mut obj T) ! {
+	decode_writeable_to_opt[T](i, mut obj, &DecodeOpts{})!
 }
 
-pub fn decode_writeable_to_opt[T](ini &WriteableIni, mut obj T, opts &DecodeOpts) ! {
-	decode_props[T, WriteableIni](mut obj, ini, ini.globals, opts)!
-	decode_sects[T, WriteableIni](mut obj, ini, opts)!
+pub fn decode_writeable_to_opt[T](i &WriteableIni, mut obj T, opts &DecodeOpts) ! {
+	decode_props[T, WriteableIni](mut obj, i, i.globals, opts)!
+	decode_sects[T, WriteableIni](mut obj, i, opts)!
 }
 
-fn decode_props[T, I](mut typ T, ini &I, props voidptr, opts &DecodeOpts) ! {
+fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 	if opts.forbid_extra_keys {
-		props_len := ini.get_props_len(props)
-		for i in 0 .. props_len {
+		props_len := i.get_props_len(props)
+		for n in 0 .. props_len {
 			$for field in T.fields {
 				mut json_name := field.name
 				mut skip := false
@@ -92,13 +92,13 @@ fn decode_props[T, I](mut typ T, ini &I, props voidptr, opts &DecodeOpts) ! {
 						skip = true
 					}
 				}
-				if skip || json_name == ini.get_prop_name(props, i) {
+				if skip || json_name == i.get_prop_name(props, n) {
 					unsafe {
 						goto passed
 					}
 				}
 			}
-			return error('extra "${ini.get_prop_name(props, i)}" key')
+			return error('extra "${i.get_prop_name(props, n)}" key')
 			passed:
 		}
 	}
@@ -127,7 +127,7 @@ fn decode_props[T, I](mut typ T, ini &I, props voidptr, opts &DecodeOpts) ! {
 			}
 
 			if skip {
-			} else if val := ini.get_prop_val(props, json_name) {
+			} else if val := i.get_prop_val(props, json_name) {
 				ino := nooverflow || opts.ignore_number_overflow
 				$if field.is_enum {
 					typ.$(field.name) = decode_enum(val, field.typ)!
@@ -174,7 +174,7 @@ fn decode_props[T, I](mut typ T, ini &I, props voidptr, opts &DecodeOpts) ! {
 	}
 }
 
-fn decode_sects[T, I](mut typ T, ini &I, opts &DecodeOpts) ! {
+fn decode_sects[T, I](mut typ T, i &I, opts &DecodeOpts) ! {
 	$for field in T.fields {
 		$if field.is_struct {
 			mut json_name := field.name
@@ -191,9 +191,9 @@ fn decode_sects[T, I](mut typ T, ini &I, opts &DecodeOpts) ! {
 			}
 
 			if skip {
-			} else if props := ini.get_sect_props(json_name) {
+			} else if props := i.get_sect_props(json_name) {
 				mut obj := typ.$(field.name)
-				decode_props(mut obj, ini, props, opts)!
+				decode_props(mut obj, i, props, opts)!
 				typ.$(field.name) = obj
 			} else if required || opts.require_all_fields {
 				return error('missing "${json_name}" key')

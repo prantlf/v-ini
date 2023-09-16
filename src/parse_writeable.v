@@ -3,7 +3,7 @@ module ini
 struct WriteableParser {
 	Parser
 mut:
-	ini     &WriteableIni = unsafe { nil }
+	ri      &WriteableIni = unsafe { nil }
 	section string
 }
 
@@ -12,22 +12,22 @@ pub fn parse_writeable(source string) !&WriteableIni {
 }
 
 pub fn parse_writeable_opt(source string, opts &ParseOpts) !&WriteableIni {
-	mut ini := &WriteableIni{}
-	parse_writeable_to_opt(source, mut ini, opts)!
-	return ini
+	mut i := &WriteableIni{}
+	parse_writeable_to_opt(source, mut i, opts)!
+	return i
 }
 
-pub fn parse_writeable_to(source string, mut ini WriteableIni) ! {
-	parse_writeable_to_opt(source, mut ini, ParseOpts{})!
+pub fn parse_writeable_to(source string, mut i WriteableIni) ! {
+	parse_writeable_to_opt(source, mut i, ParseOpts{})!
 }
 
-pub fn parse_writeable_to_opt(source string, mut ini WriteableIni, opts &ParseOpts) ! {
+pub fn parse_writeable_to_opt(source string, mut i WriteableIni, opts &ParseOpts) ! {
 	mut p := &WriteableParser{
 		opts: unsafe { opts }
-		ini: unsafe { ini }
+		ri: unsafe { i }
 		source: source
 	}
-	parse_contents(mut p, ini, opts)!
+	parse_contents(mut p, i, opts)!
 }
 
 [direct_array_access]
@@ -48,9 +48,9 @@ fn (mut p WriteableParser) parse_property(from int) !int {
 	d.log('set property "%s" to "%s"', name, val_s)
 
 	if p.section.len > 0 {
-		p.ini.sections[p.section][name] = val
+		p.ri.sections[p.section][name] = val
 	} else {
-		p.ini.globals[name] = val
+		p.ri.globals[name] = val
 	}
 
 	return i

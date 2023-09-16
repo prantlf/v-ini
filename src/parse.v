@@ -30,7 +30,7 @@ pub:
 	preserve_whitespace bool
 }
 
-fn parse_contents[P, I](mut p P, ini &I, opts &ParseOpts) ! {
+fn parse_contents[P, I](mut p P, i &I, opts &ParseOpts) ! {
 	if d.is_enabled() {
 		short_s := d.shorten(p.source)
 		opts_s := if opts.preserve_whitespace {
@@ -45,25 +45,25 @@ fn parse_contents[P, I](mut p P, ini &I, opts &ParseOpts) ! {
 		}
 	}
 
-	mut globs_len := ini.globals.len
-	mut sects_len := ini.sections.len
-	for i := p.after_bom(); true; {
-		i = p.skip_whitespace(i)
-		if i == p.source.len {
+	mut globs_len := i.globals.len
+	mut sects_len := i.sections.len
+	for n := p.after_bom(); true; {
+		n = p.skip_whitespace(n)
+		if n == p.source.len {
 			break
 		}
-		if p.source[i] == `[` {
-			i = p.parse_section(i)!
+		if p.source[n] == `[` {
+			n = p.parse_section(n)!
 		} else {
-			i = p.parse_property(i)!
+			n = p.parse_property(n)!
 		}
-		i = p.skip_whitespace(i)
+		n = p.skip_whitespace(n)
 	}
 
 	if d.is_enabled() {
 		d.start_ticking()
-		globs_len = p.ini.globals.len - globs_len
-		sects_len = p.ini.sections.len - sects_len
+		globs_len = p.ri.globals.len - globs_len
+		sects_len = p.ri.sections.len - sects_len
 		globs := if globs_len == 1 {
 			'property'
 		} else {

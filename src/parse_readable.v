@@ -3,7 +3,7 @@ module ini
 struct ReadableParser {
 	Parser
 mut:
-	ini     &ReadableIni = unsafe { nil }
+	ri      &ReadableIni = unsafe { nil }
 	section &Section     = unsafe { nil }
 }
 
@@ -12,27 +12,27 @@ pub fn parse_readable(source string) !&ReadableIni {
 }
 
 pub fn parse_readable_opt(source string, opts &ParseOpts) !&ReadableIni {
-	mut ini := &ReadableIni{
+	mut i := &ReadableIni{
 		source: source
 	}
 	mut p := &ReadableParser{
 		opts: unsafe { opts }
-		ini: ini
+		ri: i
 		source: source
 	}
-	parse_contents(mut p, ini, opts)!
-	return ini
+	parse_contents(mut p, i, opts)!
+	return i
 }
 
 [direct_array_access]
 fn (mut p ReadableParser) parse_section(from int) !int {
 	start, name_end, i := skip_section(p, from)!
 
-	p.ini.sections << Section{
+	p.ri.sections << Section{
 		name_start: start
 		name_end: name_end
 	}
-	p.section = &p.ini.sections[p.ini.sections.len - 1]
+	p.section = &p.ri.sections[p.ri.sections.len - 1]
 	if d.is_enabled() {
 		name := d.shorten(p.source[from..name_end])
 		d.log_str('start section "${name}"')
@@ -52,7 +52,7 @@ fn (mut p ReadableParser) parse_property(from int) !int {
 		val_end: end
 	}
 	if isnil(p.section) {
-		p.ini.globals << prop
+		p.ri.globals << prop
 	} else {
 		p.section.props << prop
 	}

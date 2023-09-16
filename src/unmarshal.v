@@ -1,11 +1,7 @@
 module ini
 
 pub struct UnmarshalOpts {
-pub:
-	require_all_fields     bool
-	forbid_extra_keys      bool
-	ignore_number_overflow bool
-	preserve_whitespace    bool
+	DecodeOpts
 }
 
 pub fn unmarshal[T](source string) !T {
@@ -23,10 +19,10 @@ pub fn unmarshal_to[T](source string, mut obj T) ! {
 }
 
 pub fn unmarshal_to_opt[T](source string, mut obj T, opts &UnmarshalOpts) ! {
-	ini := parse_readable_opt(source, ParseOpts{
+	i := parse_readable_opt(source, ParseOpts{
 		preserve_whitespace: opts.preserve_whitespace
 	})!
-	decode_readable_to_opt[T](ini, mut obj, DecodeOpts{
+	decode_readable_to_opt[T](i, mut obj, DecodeOpts{
 		require_all_fields: opts.require_all_fields
 		forbid_extra_keys: opts.forbid_extra_keys
 		ignore_number_overflow: opts.ignore_number_overflow

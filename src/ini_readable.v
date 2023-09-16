@@ -35,9 +35,9 @@ pub fn ReadableIni.from_sections_map(sections map[string]map[string]string) &Rea
 
 pub fn ReadableIni.from_both_maps(globals map[string]string, sections map[string]map[string]string) &ReadableIni {
 	mut builder := new_builder(32)
-	mut ini := &ReadableIni{}
+	mut i := &ReadableIni{}
 
-	fill_props(globals, mut ini.globals, mut builder)
+	fill_props(globals, mut i.globals, mut builder)
 
 	for section, vals in sections {
 		builder.write_u8(`[`)
@@ -50,11 +50,11 @@ pub fn ReadableIni.from_both_maps(globals map[string]string, sections map[string
 			name_end: start_sect + section.len
 		}
 		fill_props(vals, mut sect.props, mut builder)
-		ini.sections << sect
+		i.sections << sect
 	}
 
-	ini.source = builder.str()
-	return ini
+	i.source = builder.str()
+	return i
 }
 
 fn fill_props(vals map[string]string, mut props []Property, mut builder Builder) {
@@ -71,6 +71,10 @@ fn fill_props(vals map[string]string, mut props []Property, mut builder Builder)
 			val_end: start + name.len + 1 + val.len
 		}
 	}
+}
+
+pub fn (i &ReadableIni) str() string {
+	return i.source
 }
 
 pub fn (i &ReadableIni) globals_len() int {
@@ -180,23 +184,23 @@ pub fn (i &ReadableIni) section_prop_val(section string, name string) ?string {
 
 [noinit]
 pub struct Sections {
-	ini &ReadableIni
+	ri &ReadableIni
 mut:
 	idx int
 }
 
 pub fn (i &ReadableIni) sections() Sections {
 	return Sections{
-		ini: i
+		ri: i
 	}
 }
 
 pub fn (s &Sections) is_valid() bool {
-	return s.idx != s.ini.sections.len
+	return s.idx != s.ri.sections.len
 }
 
 pub fn (mut s Sections) next() bool {
-	if s.idx == s.ini.sections.len {
+	if s.idx == s.ri.sections.len {
 		return false
 	}
 	s.idx++
@@ -204,17 +208,17 @@ pub fn (mut s Sections) next() bool {
 }
 
 pub fn (s &Sections) name() string {
-	sect := s.ini.sections[s.idx]
-	return s.ini.source[sect.name_start..sect.name_end]
+	sect := s.ri.sections[s.idx]
+	return s.ri.source[sect.name_start..sect.name_end]
 }
 
 pub fn (s &Sections) len() int {
-	return s.ini.sections[s.idx].props.len
+	return s.ri.sections[s.idx].props.len
 }
 
 pub fn (s &Sections) has(name string) bool {
-	for prop in s.ini.sections[s.idx].props {
-		if unsafe { compare_str_within_nochk(name, s.ini.source, prop.name_start, prop.name_end) } == 0 {
+	for prop in s.ri.sections[s.idx].props {
+		if unsafe { compare_str_within_nochk(name, s.ri.source, prop.name_start, prop.name_end) } == 0 {
 			return true
 		}
 	}
@@ -223,16 +227,16 @@ pub fn (s &Sections) has(name string) bool {
 
 pub fn (s &Sections) prop_names(name string) []string {
 	mut names := []string{}
-	for prop in s.ini.sections[s.idx].props {
-		names << s.ini.source[prop.name_start..prop.name_end]
+	for prop in s.ri.sections[s.idx].props {
+		names << s.ri.source[prop.name_start..prop.name_end]
 	}
 	return names
 }
 
 pub fn (s &Sections) prop_val(name string) ?string {
-	for prop in s.ini.sections[s.idx].props {
-		if unsafe { compare_str_within_nochk(name, s.ini.source, prop.name_start, prop.name_end) } == 0 {
-			return s.ini.source[prop.val_start..prop.val_end]
+	for prop in s.ri.sections[s.idx].props {
+		if unsafe { compare_str_within_nochk(name, s.ri.source, prop.name_start, prop.name_end) } == 0 {
+			return s.ri.source[prop.val_start..prop.val_end]
 		}
 	}
 	return none
@@ -240,14 +244,14 @@ pub fn (s &Sections) prop_val(name string) ?string {
 
 pub fn (s &Sections) props() Properties {
 	return Properties{
-		ini: s.ini
-		props: s.ini.sections[s.idx].props
+		ri: s.ri
+		props: s.ri.sections[s.idx].props
 	}
 }
 
 [noinit]
 pub struct Properties {
-	ini   &ReadableIni
+	ri    &ReadableIni
 	props []Property
 mut:
 	idx int
@@ -255,7 +259,7 @@ mut:
 
 pub fn (i &ReadableIni) globals(section string) Properties {
 	return Properties{
-		ini: i
+		ri: i
 		props: i.globals
 	}
 }
@@ -264,7 +268,7 @@ pub fn (i &ReadableIni) section_props(section string) ?Properties {
 	for sect in i.sections {
 		if unsafe { compare_str_within_nochk(section, i.source, sect.name_start, sect.name_end) } == 0 {
 			return Properties{
-				ini: i
+				ri: i
 				props: sect.props
 			}
 		}
@@ -286,17 +290,17 @@ pub fn (mut s Properties) next() bool {
 
 pub fn (s &Properties) name() string {
 	prop := s.props[s.idx]
-	return s.ini.source[prop.name_start..prop.name_end]
+	return s.ri.source[prop.name_start..prop.name_end]
 }
 
 pub fn (s &Properties) val() string {
 	prop := s.props[s.idx]
-	return s.ini.source[prop.val_start..prop.val_end]
+	return s.ri.source[prop.val_start..prop.val_end]
 }
 
 pub fn (s &Properties) name_and_val() (string, string) {
 	prop := s.props[s.idx]
-	return s.ini.source[prop.name_start..prop.name_end], s.ini.source[prop.val_start..prop.val_end]
+	return s.ri.source[prop.name_start..prop.name_end], s.ri.source[prop.val_start..prop.val_end]
 }
 
 fn (i &ReadableIni) get_sect_props(section string) ?voidptr {

@@ -3,9 +3,9 @@ module ini
 struct Empty {}
 
 fn test_decode_empty() {
-	ini := ReadableIni{}
-	mut e := decode[Empty, ReadableIni](ini)!
-	decode_to[Empty, ReadableIni](ini, mut e)!
+	i := ReadableIni{}
+	mut e := decode[Empty, ReadableIni](i)!
+	decode_to[Empty, ReadableIni](i, mut e)!
 }
 
 // enum Human {
@@ -31,7 +31,7 @@ struct PrimitiveTypes {
 }
 
 fn test_decode_primitive_types() {
-	ini := ReadableIni.from_globals_map({
+	i := ReadableIni.from_globals_map({
 		// 'h1':     '1'
 		// 'h2':     'woman'
 		'u8':     '1'
@@ -47,7 +47,7 @@ fn test_decode_primitive_types() {
 		'string': 's'
 		'bool':   'true'
 	})
-	r := decode[PrimitiveTypes, ReadableIni](ini)!
+	r := decode[PrimitiveTypes, ReadableIni](i)!
 	// assert r.h1 == .woman
 	// assert r.h2 == .woman
 	assert r.u8 == 1
@@ -82,7 +82,7 @@ struct OptionalTypes {
 }
 
 fn test_decode_optional_types() {
-	ini := ReadableIni.from_globals_map({
+	i := ReadableIni.from_globals_map({
 		// 'h1':     '1'
 		// 'h2':     'woman'
 		'u8':     '1'
@@ -98,7 +98,7 @@ fn test_decode_optional_types() {
 		'string': 's'
 		'bool':   'true'
 	})
-	r := decode[OptionalTypes, ReadableIni](ini)!
+	r := decode[OptionalTypes, ReadableIni](i)!
 	// assert r.h1? == .woman
 	// assert r.h2? == .woman
 	assert r.u8? == 1
@@ -133,7 +133,7 @@ struct Arrays {
 }
 
 fn test_decode_arrays_1() {
-	ini := ReadableIni.from_globals_map({
+	i := ReadableIni.from_globals_map({
 		// 'h1':     '1'
 		// 'h2':     'woman'
 		'u8':     '1'
@@ -149,7 +149,7 @@ fn test_decode_arrays_1() {
 		'string': 's'
 		'bool':   'true'
 	})
-	r := decode[Arrays, ReadableIni](ini)!
+	r := decode[Arrays, ReadableIni](i)!
 	// assert r.h1 == .woman
 	// assert r.h2 == .woman
 	assert r.u8 == [u8(1)]
@@ -167,7 +167,7 @@ fn test_decode_arrays_1() {
 }
 
 fn test_decode_arrays_2() {
-	ini := ReadableIni.from_globals_map({
+	i := ReadableIni.from_globals_map({
 		// 'h1':     '1'
 		// 'h2':     'woman'
 		'u8':     '1, 2 '
@@ -183,7 +183,7 @@ fn test_decode_arrays_2() {
 		'string': 's, t '
 		'bool':   'true, false'
 	})
-	r := decode[Arrays, ReadableIni](ini)!
+	r := decode[Arrays, ReadableIni](i)!
 	// assert r.h1 == .woman
 	// assert r.h2 == .woman
 	assert r.u8 == [u8(1), 2]
@@ -205,10 +205,10 @@ struct CustomSplit {
 }
 
 fn test_decode_arrays_custom_split() {
-	ini := ReadableIni.from_globals_map({
+	i := ReadableIni.from_globals_map({
 		'string': 's;t'
 	})
-	r := decode[CustomSplit, ReadableIni](ini)!
+	r := decode[CustomSplit, ReadableIni](i)!
 	assert r.string == ['s', 't']
 }
 
@@ -217,10 +217,10 @@ struct EmptySection {
 }
 
 fn test_decode_empty_section() {
-	ini := ReadableIni.from_sections_map({
+	i := ReadableIni.from_sections_map({
 		'empty': map[string]string{}
 	})
-	r := decode[EmptySection, ReadableIni](ini)!
+	r := decode[EmptySection, ReadableIni](i)!
 }
 
 // struct OptionalArrays {
@@ -241,7 +241,7 @@ fn test_decode_empty_section() {
 // }
 
 // fn test_decode_optinal_arrays() {
-// 	ini := ReadableIni.from_globals_map({
+// 	i := ReadableIni.from_globals_map({
 //		// 'h1':     '1'
 //		// 'h2':     'woman'
 //		'u8':     '1'
@@ -257,7 +257,7 @@ fn test_decode_empty_section() {
 //		'string': 's'
 //		'bool':   'true'
 // 	})
-// 	r := decode[OptionalArrays, ReadableIni](ini)!
+// 	r := decode[OptionalArrays, ReadableIni](i)!
 // 	// assert r.h1 == .woman
 // 	// assert r.h2 == .woman
 // 	assert r.u8? == [u8(1)]
@@ -292,7 +292,7 @@ fn test_decode_empty_section() {
 // }
 
 // fn test_decode_arrays_of_options() {
-// 	ini := ReadableIni.from_globals_map({
+// 	i := ReadableIni.from_globals_map({
 //		// 'h1':     '1'
 //		// 'h2':     'woman'
 //		'u8':     '1'
@@ -308,7 +308,7 @@ fn test_decode_empty_section() {
 //		'string': 's'
 //		'bool':   'true'
 // 	})
-// 	r := decode[ArraysOfOptions, ReadableIni](ini)!
+// 	r := decode[ArraysOfOptions, ReadableIni](i)!
 // 	// assert r.h1 == .woman
 // 	// assert r.h2 == .woman
 // 	assert r.u8 == [?u8(1)]
