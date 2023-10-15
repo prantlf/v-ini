@@ -1,5 +1,12 @@
 # Changes
 
+## [0.2.0](https://github.com/prantlf/v-ini/compare/v0.1.1...v0.2.0) (2023-10-15)
+
+### Features
+
+* Support decoding maps ([f423ee2](https://github.com/prantlf/v-ini/commit/f423ee2b40b026d7a1c1bfdf3bfcb1a9f94cec9c))
+* Support marshalling an object to a string ([a84d954](https://github.com/prantlf/v-ini/commit/a84d954e08f16acbb75249300a6217613e1f2ee9))
+
 ## [0.1.1](https://github.com/prantlf/v-ini/compare/v0.1.0...v0.1.1) (2023-09-16)
 
 ### Bug Fixes
