@@ -109,6 +109,7 @@ fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 			mut required := false
 			mut skip := false
 			mut split := ','
+			mut entrysplit := ':'
 			mut nooverflow := false
 			for attr in field.attrs {
 				if attr.starts_with('json: ') {
@@ -121,6 +122,10 @@ fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 					split = ','
 				} else if attr.starts_with('split: ') {
 					split = attr[7..]
+				} else if attr == 'entrysplit' {
+					entrysplit = ':'
+				} else if attr.starts_with('entrysplit: ') {
+					entrysplit = attr[12..]
 				} else if attr == 'nooverflow' {
 					nooverflow = true
 				}
@@ -163,6 +168,16 @@ fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 						mut arr := typ.$(field.name)
 						decode_array(mut arr, val, split, opts)!
 						typ.$(field.name) = arr
+					}
+				} $else $if field.is_map {
+					$if field.is_option {
+						src := &typ.$(field.name)
+						mut dst := decode_map_option(src, val, split, entrysplit, opts)!
+						typ.$(field.name) = dst.move()
+					} $else {
+						src := &typ.$(field.name)
+						mut dst := decode_map(src, val, split, entrysplit, opts)!
+						typ.$(field.name) = dst.move()
 					}
 				} $else {
 					return error('unsupported type ${type_name(field.typ)} of ${field.name}')
@@ -219,6 +234,28 @@ fn decode_array_option[T](_ ?[]T, val string, split string, opts &DecodeOpts) ![
 	mut arr := []T{}
 	decode_array(mut arr, val, split, opts)!
 	return arr
+}
+
+fn decode_map[T](_ &map[string]T, text string, split string, entrysplit string, opts &DecodeOpts) !map[string]T {
+	mut out := map[string]T{}
+	res := text.split(split)
+	for item in res {
+		entries := item.split(entrysplit)
+		start_k, end_k := avoid_space(entries[0])
+		key := item[start_k..end_k]
+		mut val := entries[1]
+		if !opts.preserve_whitespace {
+			start_v, end_v := avoid_space(val)
+			val = val[start_v..end_v]
+		}
+		out[key] = decode_val[T](val, opts)!
+	}
+	return out
+}
+
+fn decode_map_option[T](_ ?map[string]T, val string, split string, entrysplit string, opts &DecodeOpts) !map[string]T {
+	m := map[string]T{}
+	return decode_map(&m, val, split, entrysplit, opts)!
 }
 
 fn decode_val[T](val string, opts &DecodeOpts) !T {
