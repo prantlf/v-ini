@@ -201,6 +201,17 @@ Sections and section properties can be inspected by the following methods and pr
 (i &WriteableIni) sections map[string]map[string]string
 ```
 
+### Saving
+
+Marshal the contents of an object to a string:
+
+```go
+fn marshal[T](source &T) !string
+fn marshal_opt[T](source &T, opts &MarshalOpts) !string
+fn marshal_to[T](source &T, mut builder Builder) !
+fn marshal_to_opt[T](source &T, mut builder Builder, opts &MarshalOpts) !
+```
+
 ### Errors
 
 If parsing the ini-file contents fails because of an invalid syntax, the following error will be returned:
