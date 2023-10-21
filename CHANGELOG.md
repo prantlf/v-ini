@@ -1,5 +1,11 @@
 # Changes
 
+## [0.2.1](https://github.com/prantlf/v-ini/compare/v0.2.0...v0.2.1) (2023-10-22)
+
+### Bug Fixes
+
+* Fix marshalling ([4e34803](https://github.com/prantlf/v-ini/commit/4e34803538323e30faf33a52c9a342d5ff25827a))
+
 ## [0.2.0](https://github.com/prantlf/v-ini/compare/v0.1.1...v0.2.0) (2023-10-15)
 
 ### Features
