@@ -1,5 +1,11 @@
 # Changes
 
+## [0.2.2](https://github.com/prantlf/v-ini/compare/v0.2.1...v0.2.2) (2023-12-11)
+
+### Bug Fixes
+
+* Adapt for V langage changes ([5e65325](https://github.com/prantlf/v-ini/commit/5e65325291514afb09c6ae944bcabcae93cc401e))
+
 ## [0.2.1](https://github.com/prantlf/v-ini/compare/v0.2.0...v0.2.1) (2023-10-22)
 
 ### Bug Fixes
