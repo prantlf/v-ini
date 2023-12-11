@@ -30,7 +30,7 @@ pub fn parse_writeable_to_opt(source string, mut i WriteableIni, opts &ParseOpts
 	parse_contents(mut p, i, opts)!
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn (mut p WriteableParser) parse_section(from int) !int {
 	start, name_end, i := skip_section(p, from)!
 	p.section = p.source[start..name_end]
@@ -38,7 +38,7 @@ fn (mut p WriteableParser) parse_section(from int) !int {
 	return i
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn (mut p WriteableParser) parse_property(from int) !int {
 	name_end, start, end, i := skip_property(p, from)!
 

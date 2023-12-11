@@ -17,7 +17,7 @@ mut:
 	props []Property
 }
 
-[heap; noinit]
+@[heap; noinit]
 pub struct ReadableIni {
 mut:
 	source   string
@@ -182,7 +182,7 @@ pub fn (i &ReadableIni) section_prop_val(section string, name string) ?string {
 	return none
 }
 
-[noinit]
+@[noinit]
 pub struct Sections {
 	ri &ReadableIni
 mut:
@@ -249,7 +249,7 @@ pub fn (s &Sections) props() Properties {
 	}
 }
 
-[noinit]
+@[noinit]
 pub struct Properties {
 	ri    &ReadableIni
 	props []Property
@@ -313,13 +313,13 @@ fn (i &ReadableIni) get_sect_props(section string) ?voidptr {
 	return none
 }
 
-[inline]
+@[inline]
 fn (i &ReadableIni) get_props_len(props voidptr) int {
 	props_arr := &[]Property(props)
 	return props_arr.len
 }
 
-[inline]
+@[inline]
 fn (i &ReadableIni) get_prop_name(props voidptr, idx int) string {
 	props_arr := &[]Property(props)
 	prop := unsafe { props_arr[idx] }

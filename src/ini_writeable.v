@@ -1,6 +1,6 @@
 module ini
 
-[heap; noinit]
+@[heap; noinit]
 pub struct WriteableIni {
 pub mut:
 	globals  map[string]string
@@ -69,13 +69,13 @@ fn (i &WriteableIni) get_sect_props(section string) ?voidptr {
 	return none
 }
 
-[inline]
+@[inline]
 fn (i &WriteableIni) get_props_len(props voidptr) int {
 	props_data := unsafe { &PropsData(props) }
 	return props_data.props.len
 }
 
-[inline]
+@[inline]
 fn (i &WriteableIni) get_prop_name(props voidptr, idx int) string {
 	props_data := unsafe { &PropsData(props) }
 	return props_data.keys[idx]

@@ -78,7 +78,7 @@ fn parse_contents[P, I](mut p P, i &I, opts &ParseOpts) ! {
 	}
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn skip_section[P](p &P, from int) !(int, int, int) {
 	start := p.skip_space(from + 1)
 	if start == p.source.len {
@@ -127,7 +127,7 @@ fn skip_section[P](p &P, from int) !(int, int, int) {
 	return start, name_end, i + 1
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn skip_property[P](p &P, from int) !(int, int, int, int) {
 	mut name_end := 0
 	mut i := from
@@ -219,7 +219,7 @@ fn skip_property[P](p &P, from int) !(int, int, int, int) {
 	return name_end, start, end, i
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn (p &Parser) skip_space(from int) int {
 	mut i := from
 	for i < p.source.len {
@@ -235,7 +235,7 @@ fn (p &Parser) skip_space(from int) int {
 	return i
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn (mut p Parser) skip_whitespace(from int) int {
 	mut i := from
 	for i < p.source.len {
@@ -259,7 +259,7 @@ fn (mut p Parser) skip_whitespace(from int) int {
 	return i
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn (mut p Parser) skip_comment(from int) int {
 	mut i := from + 1
 	for i < p.source.len {
@@ -274,7 +274,7 @@ fn (mut p Parser) skip_comment(from int) int {
 	return i
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn (p &Parser) after_bom() int {
 	if p.source.len >= 3 {
 		unsafe {

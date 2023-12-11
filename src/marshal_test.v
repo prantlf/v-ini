@@ -191,7 +191,7 @@ bool = true, false
 }
 
 struct CustomSplit {
-	string []string [split: ';']
+	string []string @[split: ';']
 }
 
 fn test_marshal_arrays_custom_split() {

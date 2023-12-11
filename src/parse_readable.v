@@ -24,7 +24,7 @@ pub fn parse_readable_opt(source string, opts &ParseOpts) !&ReadableIni {
 	return i
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn (mut p ReadableParser) parse_section(from int) !int {
 	start, name_end, i := skip_section(p, from)!
 
@@ -41,7 +41,7 @@ fn (mut p ReadableParser) parse_section(from int) !int {
 	return i
 }
 
-[direct_array_access]
+@[direct_array_access]
 fn (mut p ReadableParser) parse_property(from int) !int {
 	name_end, start, end, i := skip_property(p, from)!
 

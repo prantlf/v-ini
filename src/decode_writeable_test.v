@@ -201,7 +201,7 @@ fn test_decode_arrays_2() {
 }
 
 struct CustomSplit {
-	string []string [split: ';']
+	string []string @[split: ';']
 }
 
 fn test_decode_arrays_custom_split() {

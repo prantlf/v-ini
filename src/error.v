@@ -4,7 +4,7 @@ import os
 import strings
 import term
 
-[noinit]
+@[noinit]
 pub struct ParseError {
 	Error
 	head_context string
@@ -112,7 +112,7 @@ fn before_error(input string, offset int) (string, string) {
 	}
 
 	mut head := ''
-	eol := inline.last_index_u8(`\n`) + 1
+	eol := inline.index_u8_last(`\n`) + 1
 	if eol > 0 {
 		head = inline[..eol]
 		inline = inline[eol..]
