@@ -134,31 +134,74 @@ fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 			if skip {
 			} else if val := i.get_prop_val(props, json_name) {
 				ino := nooverflow || opts.ignore_number_overflow
-				$if field.is_enum {
-					typ.$(field.name) = decode_enum(val, field.typ)!
-				} $else $if field.typ is int || field.typ is ?int {
+				$if field.is_option {
+					$if field.is_enum {
+						old_val := typ.$(field.name)
+						if new_val := decode_enum_option(old_val, val, field.typ) {
+							typ.$(field.name) = new_val
+						} else {
+							return err
+						}
+					} $else $if field.typ is ?int {
+						typ.$(field.name) = decode_int[int](val, ino)!
+					} $else $if field.typ is ?u8 {
+						typ.$(field.name) = decode_int[u8](val, ino)!
+					} $else $if field.typ is ?u16 {
+						typ.$(field.name) = decode_int[u16](val, ino)!
+					} $else $if field.typ is ?u32 {
+						typ.$(field.name) = decode_int[u32](val, ino)!
+					} $else $if field.typ is ?u64 {
+						typ.$(field.name) = parse_uint(val, 10, 64)!
+					} $else $if field.typ is ?i8 {
+						typ.$(field.name) = decode_int[i8](val, ino)!
+					} $else $if field.typ is ?i16 {
+						typ.$(field.name) = decode_int[i16](val, ino)!
+					} $else $if field.typ is ?i64 {
+						typ.$(field.name) = parse_int(val, 10, 64)!
+					} $else $if field.typ is ?f32 {
+						typ.$(field.name) = decode_f32(val, ino)!
+					} $else $if field.typ is ?f64 {
+						typ.$(field.name) = decode_f64(val, ino)!
+					} $else $if field.typ is ?bool {
+						typ.$(field.name) = decode_bool(val)!
+					} $else $if field.typ is ?string {
+						typ.$(field.name) = val
+					} $else $if field.is_array {
+						mut arr := typ.$(field.name)
+						typ.$(field.name) = decode_array_option(arr, val, split, opts)!
+					} $else $if field.is_map {
+						src := &typ.$(field.name)
+						mut dst := decode_map_option(src, val, split, entrysplit, opts)!
+						typ.$(field.name) = dst.move()
+					} $else {
+						return error('unsupported option type ${type_name(field.typ)} of ${field.name}')
+					}
+				} $else $if field.is_enum {
+					old_val := typ.$(field.name)
+					typ.$(field.name) = decode_enum(old_val, val, field.typ)!
+				} $else $if field.typ is int {
 					typ.$(field.name) = decode_int[int](val, ino)!
-				} $else $if field.typ is u8 || field.typ is ?u8 {
+				} $else $if field.typ is u8 {
 					typ.$(field.name) = decode_int[u8](val, ino)!
-				} $else $if field.typ is u16 || field.typ is ?u16 {
+				} $else $if field.typ is u16 {
 					typ.$(field.name) = decode_int[u16](val, ino)!
-				} $else $if field.typ is u32 || field.typ is ?u32 {
+				} $else $if field.typ is u32 {
 					typ.$(field.name) = decode_int[u32](val, ino)!
-				} $else $if field.typ is u64 || field.typ is ?u64 {
+				} $else $if field.typ is u64 {
 					typ.$(field.name) = parse_uint(val, 10, 64)!
-				} $else $if field.typ is i8 || field.typ is ?i8 {
+				} $else $if field.typ is i8 {
 					typ.$(field.name) = decode_int[i8](val, ino)!
-				} $else $if field.typ is i16 || field.typ is ?i16 {
+				} $else $if field.typ is i16 {
 					typ.$(field.name) = decode_int[i16](val, ino)!
-				} $else $if field.typ is i64 || field.typ is ?i64 {
+				} $else $if field.typ is i64 {
 					typ.$(field.name) = parse_int(val, 10, 64)!
-				} $else $if field.typ is f32 || field.typ is ?f32 {
+				} $else $if field.typ is f32 {
 					typ.$(field.name) = decode_f32(val, ino)!
-				} $else $if field.typ is f64 || field.typ is ?f64 {
+				} $else $if field.typ is f64 {
 					typ.$(field.name) = decode_f64(val, ino)!
-				} $else $if field.typ is bool || field.typ is ?bool {
+				} $else $if field.typ is bool {
 					typ.$(field.name) = decode_bool(val)!
-				} $else $if field.typ is string || field.typ is ?string {
+				} $else $if field.typ is string {
 					typ.$(field.name) = val
 				} $else $if field.is_array {
 					$if field.is_option {
@@ -230,6 +273,7 @@ fn decode_array[T](mut typ []T, text string, split string, opts &DecodeOpts) ! {
 	}
 }
 
+@[inline]
 fn decode_array_option[T](_ ?[]T, val string, split string, opts &DecodeOpts) ![]T {
 	mut arr := []T{}
 	decode_array(mut arr, val, split, opts)!
@@ -253,6 +297,7 @@ fn decode_map[T](_ &map[string]T, text string, split string, entrysplit string, 
 	return out
 }
 
+@[inline]
 fn decode_map_option[T](_ ?map[string]T, val string, split string, entrysplit string, opts &DecodeOpts) !map[string]T {
 	m := map[string]T{}
 	return decode_map(&m, val, split, entrysplit, opts)!
@@ -262,30 +307,30 @@ fn decode_val[T](val string, opts &DecodeOpts) !T {
 	mut typ := T{}
 	ino := opts.ignore_number_overflow
 	$if T is $enum {
-		typ = decode_enum(val, T.idx)!
-	} $else $if T is int || T is ?int {
+		typ = decode_enum(unsafe { T(0) }, val, T.idx)!
+	} $else $if T is int {
 		typ = decode_int[int](val, ino)!
-	} $else $if T is u8 || T is ?u8 {
+	} $else $if T is u8 {
 		typ = decode_int[u8](val, ino)!
-	} $else $if T is u16 || T is ?u16 {
+	} $else $if T is u16 {
 		typ = decode_int[u16](val, ino)!
-	} $else $if T is u32 || T is ?u32 {
+	} $else $if T is u32 {
 		typ = decode_int[u32](val, ino)!
-	} $else $if T is u64 || T is ?u64 {
+	} $else $if T is u64 {
 		typ = parse_uint(val, 10, 64)!
-	} $else $if T is i8 || T is ?i8 {
+	} $else $if T is i8 {
 		typ = decode_int[i8](val, ino)!
-	} $else $if T is i16 || T is ?i16 {
+	} $else $if T is i16 {
 		typ = decode_int[i16](val, ino)!
-	} $else $if T is i64 || T is ?i64 {
+	} $else $if T is i64 {
 		typ = parse_int(val, 10, 64)!
-	} $else $if T is f32 || T is ?f32 {
+	} $else $if T is f32 {
 		typ = decode_f32(val, ino)!
-	} $else $if T is f64 || T is ?f64 {
+	} $else $if T is f64 {
 		typ = decode_f64(val, ino)!
-	} $else $if T is bool || T is ?bool {
+	} $else $if T is bool {
 		typ = decode_bool(val)!
-	} $else $if T is string || T is ?string {
+	} $else $if T is string {
 		typ = val
 	} $else {
 		return error('unsupported type ${T.name}')
@@ -343,18 +388,25 @@ fn decode_bool(val string) !bool {
 	}
 }
 
-fn decode_enum(val string, typ int) !int {
+fn decode_enum[T](_ T, val string, typ int) !T {
 	if val.len > 0 && val[0] >= `0` && val[0] <= `9` {
-		return decode_int[int](val, false)!
+		num := decode_int[int](val, false)!
+		return unsafe { T(num) }
 	} else {
 		enums := enum_vals(typ)!
 		idx := enums.index(val)
 		if idx >= 0 {
-			return idx
+			return unsafe { T(idx) }
 		} else {
 			return error('"${val}" not in ${type_name(typ)} enum')
 		}
 	}
+}
+
+@[inline]
+fn decode_enum_option[T](_ ?T, val string, typ int) !T {
+	dummy := unsafe { T(0) }
+	return decode_enum(dummy, val, typ)!
 }
 
 fn type_name(idx int) string {

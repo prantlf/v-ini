@@ -117,13 +117,12 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 						|| field.typ is ?u32 || field.typ is ?u64 || field.typ is ?i8
 						|| field.typ is ?i16 || field.typ is ?i64 || field.typ is ?bool {
 						output.write_string(val.str())!
-					} $else $if field.typ is f32 {
+					} $else $if field.typ is ?f32 {
 						output.write_string(number32_to_string(val))!
 					} $else $if field.typ is ?f64 {
 						output.write_string(number64_to_string(val))!
-						// } $else $if field.typ is ?string {
-						//  mut val := typ.$(field.name)
-						// 	output.write_string(val?)!
+					} $else $if field.typ is ?string {
+						output.write_string(val)!
 					} $else {
 						return error('unsupported type Option(${type_name(field.typ)}) of ${field.name}')
 					}
@@ -161,7 +160,7 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 	}
 }
 
-fn marshal_val[T](val &T, mut output Output, opts &MarshalOpts) !bool {
+fn marshal_val[T](val &T, mut output Output, opts &MarshalOpts) ! {
 	$if T is $enum || T is int || T is u8 || T is u16 || T is u32 || T is u64 || T is i8 || T is i16
 		|| T is i64 || T is bool {
 		output.write_string(val.str())!
@@ -174,7 +173,6 @@ fn marshal_val[T](val &T, mut output Output, opts &MarshalOpts) !bool {
 	} $else {
 		return error('unsupported type ${T.name}')
 	}
-	return true
 }
 
 fn marshal_array[T](typ []T, split string, mut output Output, opts &MarshalOpts) ! {
@@ -184,9 +182,8 @@ fn marshal_array[T](typ []T, split string, mut output Output, opts &MarshalOpts)
 			output.write_string(split)!
 			output.write_u8(` `)!
 		}
-		if marshal_val[T](item, mut output, opts)! {
-			next = true
-		}
+		marshal_val[T](item, mut output, opts)!
+		next = true
 	}
 }
 

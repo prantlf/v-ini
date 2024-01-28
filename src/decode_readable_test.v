@@ -8,14 +8,14 @@ fn test_decode_empty() {
 	decode_to[Empty, ReadableIni](i, mut e)!
 }
 
-// enum Human {
-// 	man
-// 	woman
-// }
+enum Human {
+	man
+	woman
+}
 
 struct PrimitiveTypes {
-	// h1     Human
-	// h2     Human
+	h1     Human
+	h2     Human
 	u8     u8
 	u16    u16
 	u32    u32
@@ -32,8 +32,8 @@ struct PrimitiveTypes {
 
 fn test_decode_primitive_types() {
 	i := ReadableIni.from_globals_map({
-		// 'h1':     '1'
-		// 'h2':     'woman'
+		'h1':     '1'
+		'h2':     'woman'
 		'u8':     '1'
 		'u16':    '2'
 		'u32':    '3'
@@ -48,8 +48,8 @@ fn test_decode_primitive_types() {
 		'bool':   'true'
 	})
 	r := decode[PrimitiveTypes, ReadableIni](i)!
-	// assert r.h1 == .woman
-	// assert r.h2 == .woman
+	assert r.h1 == .woman
+	assert r.h2 == .woman
 	assert r.u8 == 1
 	assert r.u16 == 2
 	assert r.u32 == 3
@@ -65,8 +65,8 @@ fn test_decode_primitive_types() {
 }
 
 struct OptionalTypes {
-	// h1     ?Human
-	// h2     ?Human
+	h1     ?Human
+	h2     ?Human
 	u8     ?u8
 	u16    ?u16
 	u32    ?u32
@@ -83,8 +83,8 @@ struct OptionalTypes {
 
 fn test_decode_optional_types() {
 	i := ReadableIni.from_globals_map({
-		// 'h1':     '1'
-		// 'h2':     'woman'
+		'h1':     '1'
+		'h2':     'woman'
 		'u8':     '1'
 		'u16':    '2'
 		'u32':    '3'
@@ -99,8 +99,8 @@ fn test_decode_optional_types() {
 		'bool':   'true'
 	})
 	r := decode[OptionalTypes, ReadableIni](i)!
-	// assert r.h1? == .woman
-	// assert r.h2? == .woman
+	assert r.h1? == .woman
+	assert r.h2? == .woman
 	assert r.u8? == 1
 	assert r.u16? == 2
 	assert r.u32? == 3
@@ -116,8 +116,8 @@ fn test_decode_optional_types() {
 }
 
 struct Arrays {
-	// h1     []Human
-	// h2     []Human
+	h1     []Human
+	h2     []Human
 	u8     []u8
 	u16    []u16
 	u32    []u32
@@ -134,8 +134,8 @@ struct Arrays {
 
 fn test_decode_arrays_1() {
 	i := ReadableIni.from_globals_map({
-		// 'h1':     '1'
-		// 'h2':     'woman'
+		'h1':     '1'
+		'h2':     'woman'
 		'u8':     '1'
 		'u16':    '2'
 		'u32':    '3'
@@ -150,8 +150,8 @@ fn test_decode_arrays_1() {
 		'bool':   'true'
 	})
 	r := decode[Arrays, ReadableIni](i)!
-	// assert r.h1 == .woman
-	// assert r.h2 == .woman
+	assert r.h1 == [.woman]
+	assert r.h2 == [.woman]
 	assert r.u8 == [u8(1)]
 	assert r.u16 == [u16(2)]
 	assert r.u32 == [u32(3)]
@@ -168,8 +168,8 @@ fn test_decode_arrays_1() {
 
 fn test_decode_arrays_2() {
 	i := ReadableIni.from_globals_map({
-		// 'h1':     '1'
-		// 'h2':     'woman'
+		'h1':     '1, 0'
+		'h2':     'woman, man'
 		'u8':     '1, 2 '
 		'u16':    '2, 3 '
 		'u32':    '3, 4 '
@@ -184,8 +184,8 @@ fn test_decode_arrays_2() {
 		'bool':   'true, false'
 	})
 	r := decode[Arrays, ReadableIni](i)!
-	// assert r.h1 == .woman
-	// assert r.h2 == .woman
+	assert r.h1 == [.woman, .man]
+	assert r.h2 == [.woman, .man]
 	assert r.u8 == [u8(1), 2]
 	assert r.u16 == [u16(2), 3]
 	assert r.u32 == [u32(3), 4]

@@ -61,52 +61,42 @@ bool = true
 '
 }
 
-// struct OptionalTypes {
-// 	// h     ?Human
-// 	u8     ?u8
-// 	u16    ?u16
-// 	u32    ?u32
-// 	u64    ?u64
-// 	i8     ?i8
-// 	i16    ?i16
-// 	int    ?int
-// 	i64    ?i64
-// 	f32    ?f32
-// 	f64    ?f64
-// 	// string ?string
-// 	bool   ?bool
-// }
+struct OptionalTypes {
+	h ?Human
+	// u8     ?u8
+	// u16    ?u16
+	// u32    ?u32
+	// u64    ?u64
+	// i8     ?i8
+	// i16    ?i16
+	// int    ?int
+	// i64    ?i64
+	// f32    ?f32
+	// f64    ?f64
+	// string ?string
+	// bool   ?bool
+}
 
-// fn test_marshal_optional_types() {
-// 	src := OptionalTypes{
-// 		// h:     .woman
-// 		u8:     1
-// 		u16:    2
-// 		u32:    3
-// 		u64:    4
-// 		i8:     5
-// 		i16:    6
-// 		int:    7
-// 		i64:    8
-// 		f32:    f32(9.1)
-// 		f64:    9.2
-// 		// string: 's'
-// 		bool:   true
-// 	}
-// 	res := marshal(src)!
-// assert res == 'u8 = 1
-// u16 = 2
-// u32 = 3
-// u64 = 4
-// i8 = 5
-// i16 = 6
-// int = 7
-// i64 = 8
-// f32 = 9.1
-// f64 = 9.2
-// bool = true
-// '
-// }
+fn test_marshal_optional_types() {
+	src := OptionalTypes{
+		h: .woman
+		// u8:     1
+		// u16:    2
+		// u32:    3
+		// u64:    4
+		// i8:     5
+		// i16:    6
+		// int:    7
+		// i64:    8
+		// f32:    f32(9.1)
+		// f64:    9.2
+		// string: 's'
+		// bool:   true
+	}
+	res := marshal(src)!
+	assert res == 'h = woman
+'
+}
 
 struct Arrays {
 	h      []Human
