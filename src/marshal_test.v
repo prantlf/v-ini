@@ -98,6 +98,15 @@ fn test_marshal_optional_types() {
 '
 }
 
+fn test_marshal_enum_as_int() {
+	src := OptionalTypes{
+		h: .woman
+	}
+	res := marshal_opt(src, &MarshalOpts{ enums_as_names: false })!
+	assert res == 'h = 1
+'
+}
+
 struct Arrays {
 	h      []Human
 	u8     []u8

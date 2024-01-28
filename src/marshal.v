@@ -52,6 +52,8 @@ fn (mut o WriterOuptut) write_u8(ch u8) ! {
 }
 
 pub struct MarshalOpts {
+pub mut:
+	enums_as_names bool = true
 }
 
 pub fn marshal[T](source &T) !string {
@@ -113,7 +115,13 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 				if val := val_opt {
 					output.write_string(json_name)!
 					output.write_string(' = ')!
-					$if field.typ is ?int || field.typ is ?u8 || field.typ is ?u16
+					$if field.is_enum {
+						if opts.enums_as_names {
+							output.write_string(val.str())!
+						} else {
+							output.write_string(unsafe { int(val) }.str())!
+						}
+					} $else $if field.typ is ?int || field.typ is ?u8 || field.typ is ?u16
 						|| field.typ is ?u32 || field.typ is ?u64 || field.typ is ?i8
 						|| field.typ is ?i16 || field.typ is ?i64 || field.typ is ?bool {
 						output.write_string(val.str())!
@@ -130,7 +138,14 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 			} $else {
 				output.write_string(json_name)!
 				output.write_string(' = ')!
-				$if field.is_enum || field.typ is int || field.typ is u8 || field.typ is u16
+				$if field.is_enum {
+					val := typ.$(field.name)
+					if opts.enums_as_names {
+						output.write_string(val.str())!
+					} else {
+						output.write_string(unsafe { int(val) }.str())!
+					}
+				} $else $if field.typ is int || field.typ is u8 || field.typ is u16
 					|| field.typ is u32 || field.typ is u64 || field.typ is i8 || field.typ is i16
 					|| field.typ is i64 || field.typ is bool {
 					val := typ.$(field.name)
@@ -161,7 +176,13 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 }
 
 fn marshal_val[T](val &T, mut output Output, opts &MarshalOpts) ! {
-	$if T is $enum || T is int || T is u8 || T is u16 || T is u32 || T is u64 || T is i8 || T is i16
+	$if T is $enum {
+		if opts.enums_as_names {
+			output.write_string(val.str())!
+		} else {
+			output.write_string(unsafe { int(val) }.str())!
+		}
+	} $else $if T is int || T is u8 || T is u16 || T is u32 || T is u64 || T is i8 || T is i16
 		|| T is i64 || T is bool {
 		output.write_string(val.str())!
 	} $else $if T is f32 {

@@ -206,6 +206,10 @@ Sections and section properties can be inspected by the following methods and pr
 Marshal the contents of an object to a string:
 
 ```go
+struct MarshalOpts {
+	enums_as_names bool = true
+}
+
 fn marshal[T](source &T) !string
 fn marshal_opt[T](source &T, opts &MarshalOpts) !string
 fn marshal_to[T](source &T, mut builder Builder) !
