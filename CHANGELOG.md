@@ -1,5 +1,15 @@
 # Changes
 
+## [0.3.0](https://github.com/prantlf/v-ini/compare/v0.2.2...v0.3.0) (2024-01-28)
+
+### Features
+
+* Let enums be optionally marshalled as numbers ([d421a3e](https://github.com/prantlf/v-ini/commit/d421a3ec96af942110c75245753fc2d13e09c480))
+
+### Bug Fixes
+
+* Get options and enums working again with the new V compiler ([533e2e9](https://github.com/prantlf/v-ini/commit/533e2e91534eb852e2ac6a82294f0f90762dc6cf))
+
 ## [0.2.2](https://github.com/prantlf/v-ini/compare/v0.2.1...v0.2.2) (2023-12-11)
 
 ### Bug Fixes
