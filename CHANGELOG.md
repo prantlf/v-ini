@@ -1,5 +1,11 @@
 # Changes
 
+## [0.3.1](https://github.com/prantlf/v-ini/compare/v0.3.0...v0.3.1) (2024-02-05)
+
+### Bug Fixes
+
+* Workaround for wrong scope resolution in V ([bdad4f6](https://github.com/prantlf/v-ini/commit/bdad4f6484e385526aeee91a2f14d362a30f308b))
+
 ## [0.3.0](https://github.com/prantlf/v-ini/compare/v0.2.2...v0.3.0) (2024-01-28)
 
 ### Features
