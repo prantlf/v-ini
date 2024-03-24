@@ -1,5 +1,11 @@
 # Changes
 
+## [0.3.2](https://github.com/prantlf/v-ini/compare/v0.3.1...v0.3.2) (2024-03-24)
+
+### Bug Fixes
+
+* Add the now mandatory & for passing references ([3dee8d0](https://github.com/prantlf/v-ini/commit/3dee8d0876bb179684d6d864ad9af5f6971cfd20))
+
 ## [0.3.1](https://github.com/prantlf/v-ini/compare/v0.3.0...v0.3.1) (2024-02-05)
 
 ### Bug Fixes
