@@ -21,6 +21,7 @@ mut:
 pub struct ReadableIni {
 mut:
 	source   string
+pub mut:
 	globals  []Property
 	sections []Section
 }
