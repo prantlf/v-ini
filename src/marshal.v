@@ -203,7 +203,7 @@ fn marshal_array[T](typ []T, split string, mut output Output, opts &MarshalOpts)
 			output.write_string(split)!
 			output.write_u8(` `)!
 		}
-		marshal_val[T](item, mut output, opts)!
+		marshal_val[T](&item, mut output, opts)!
 		next = true
 	}
 }
@@ -218,7 +218,7 @@ fn marshal_map[T](typ &map[string]T, split string, entrysplit string, mut output
 		output.write_string(key)!
 		output.write_string(entrysplit)!
 		output.write_u8(` `)!
-		marshal_val[T](value, mut output, opts)!
+		marshal_val[T](&value, mut output, opts)!
 		next = true
 	}
 }

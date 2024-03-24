@@ -20,8 +20,7 @@ mut:
 @[heap; noinit]
 pub struct ReadableIni {
 mut:
-	source string
-pub mut:
+	source   string
 	globals  []Property
 	sections []Section
 }
