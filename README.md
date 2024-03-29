@@ -1,4 +1,4 @@
-# JSON Parser and Formatter
+# INI Parser and Formatter
 
 Strictly parse and format INI file contents.
 
