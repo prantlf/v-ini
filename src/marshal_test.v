@@ -30,19 +30,19 @@ struct PrimitiveTypes {
 
 fn test_marshal_primitive_types() {
 	src := PrimitiveTypes{
-		h: .woman
-		u8: 1
-		u16: 2
-		u32: 3
-		u64: 4
-		i8: 5
-		i16: 6
-		int: 7
-		i64: 8
-		f32: f32(9.1)
-		f64: 9.2
+		h:      .woman
+		u8:     1
+		u16:    2
+		u32:    3
+		u64:    4
+		i8:     5
+		i16:    6
+		int:    7
+		i64:    8
+		f32:    f32(9.1)
+		f64:    9.2
 		string: 's'
-		bool: true
+		bool:   true
 	}
 	res := marshal(src)!
 	assert res == 'h = woman
@@ -125,19 +125,19 @@ struct Arrays {
 
 fn test_marshal_arrays() {
 	src := Arrays{
-		h: [.woman]
-		u8: [u8(1)]
-		u16: [u16(2)]
-		u32: [u32(3)]
-		u64: [u64(4)]
-		i8: [i8(5)]
-		i16: [i16(6)]
-		int: [7]
-		i64: [i64(8)]
-		f32: [f32(9.1)]
-		f64: [9.2]
+		h:      [.woman]
+		u8:     [u8(1)]
+		u16:    [u16(2)]
+		u32:    [u32(3)]
+		u64:    [u64(4)]
+		i8:     [i8(5)]
+		i16:    [i16(6)]
+		int:    [7]
+		i64:    [i64(8)]
+		f32:    [f32(9.1)]
+		f64:    [9.2]
 		string: ['s']
-		bool: [true]
+		bool:   [true]
 	}
 	res := marshal(src)!
 	assert res == 'h = woman
@@ -158,19 +158,19 @@ bool = true
 
 fn test_marshal_arrays_2() {
 	src := Arrays{
-		h: [.man, .woman]
-		u8: [u8(1), u8(2)]
-		u16: [u16(2), u16(3)]
-		u32: [u32(3), u32(4)]
-		u64: [u64(4), u64(5)]
-		i8: [i8(5), i8(6)]
-		i16: [i16(6), i16(7)]
-		int: [7, 8]
-		i64: [i64(8), i64(9)]
-		f32: [f32(9.1), f32(10)]
-		f64: [9.2, 10]
+		h:      [.man, .woman]
+		u8:     [u8(1), u8(2)]
+		u16:    [u16(2), u16(3)]
+		u32:    [u32(3), u32(4)]
+		u64:    [u64(4), u64(5)]
+		i8:     [i8(5), i8(6)]
+		i16:    [i16(6), i16(7)]
+		int:    [7, 8]
+		i64:    [i64(8), i64(9)]
+		f32:    [f32(9.1), f32(10)]
+		f64:    [9.2, 10]
 		string: ['s', 't']
-		bool: [true, false]
+		bool:   [true, false]
 	}
 	res := marshal(src)!
 	assert res == 'h = man, woman

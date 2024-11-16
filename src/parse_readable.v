@@ -16,8 +16,8 @@ pub fn parse_readable_opt(source string, opts &ParseOpts) !&ReadableIni {
 		source: source
 	}
 	mut p := &ReadableParser{
-		opts: unsafe { opts }
-		ri: i
+		opts:   unsafe { opts }
+		ri:     i
 		source: source
 	}
 	parse_contents(mut p, i, opts)!
@@ -30,7 +30,7 @@ fn (mut p ReadableParser) parse_section(from int) !int {
 
 	p.ri.sections << Section{
 		name_start: start
-		name_end: name_end
+		name_end:   name_end
 	}
 	p.section = &p.ri.sections[p.ri.sections.len - 1]
 	if d.is_enabled() {
@@ -47,9 +47,9 @@ fn (mut p ReadableParser) parse_property(from int) !int {
 
 	prop := Property{
 		name_start: from
-		name_end: name_end
-		val_start: start
-		val_end: end
+		name_end:   name_end
+		val_start:  start
+		val_end:    end
 	}
 	if isnil(p.section) {
 		p.ri.globals << prop

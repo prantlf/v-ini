@@ -23,9 +23,9 @@ pub fn unmarshal_to_opt[T](source string, mut obj T, opts &UnmarshalOpts) ! {
 		preserve_whitespace: opts.preserve_whitespace
 	})!
 	decode_readable_to_opt[T](i, mut obj, DecodeOpts{
-		require_all_fields: opts.require_all_fields
-		forbid_extra_keys: opts.forbid_extra_keys
+		require_all_fields:     opts.require_all_fields
+		forbid_extra_keys:      opts.forbid_extra_keys
 		ignore_number_overflow: opts.ignore_number_overflow
-		preserve_whitespace: opts.preserve_whitespace
+		preserve_whitespace:    opts.preserve_whitespace
 	})!
 }

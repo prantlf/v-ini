@@ -39,9 +39,9 @@ fn (mut o WriterOuptut) write_u8(ch u8) ! {
 	buf := unsafe {
 		array{
 			element_size: sizeof(u8)
-			data: vcalloc(1)
-			len: 1
-			cap: 1
+			data:         vcalloc(1)
+			len:          1
+			cap:          1
 		}
 	}
 	// buf := [ch]

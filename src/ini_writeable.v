@@ -17,7 +17,7 @@ pub fn WriteableIni.from_sections_map(sections map[string]map[string]string) &Wr
 
 pub fn WriteableIni.from_both_maps(globals map[string]string, sections map[string]map[string]string) &WriteableIni {
 	return &WriteableIni{
-		globals: globals
+		globals:  globals
 		sections: sections
 	}
 }
@@ -62,7 +62,7 @@ fn (i &WriteableIni) get_sect_props(section string) ?voidptr {
 	if sect := i.sections[section] {
 		props_data := &PropsData{
 			props: sect
-			keys: sect.keys()
+			keys:  sect.keys()
 		}
 		return props_data
 	}

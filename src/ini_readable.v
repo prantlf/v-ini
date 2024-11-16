@@ -48,7 +48,7 @@ pub fn ReadableIni.from_both_maps(globals map[string]string, sections map[string
 		builder.write_u8(`\n`)
 		mut sect := Section{
 			name_start: start_sect
-			name_end: start_sect + section.len
+			name_end:   start_sect + section.len
 		}
 		fill_props(vals, mut sect.props, mut builder)
 		i.sections << sect
@@ -67,9 +67,9 @@ fn fill_props(vals map[string]string, mut props []Property, mut builder Builder)
 		builder.write_u8(`\n`)
 		props << Property{
 			name_start: start
-			name_end: start + name.len
-			val_start: start + name.len + 1
-			val_end: start + name.len + 1 + val.len
+			name_end:   start + name.len
+			val_start:  start + name.len + 1
+			val_end:    start + name.len + 1 + val.len
 		}
 	}
 }
@@ -245,7 +245,7 @@ pub fn (s &Sections) prop_val(name string) ?string {
 
 pub fn (s &Sections) props() Properties {
 	return Properties{
-		ri: s.ri
+		ri:    s.ri
 		props: s.ri.sections[s.idx].props
 	}
 }
@@ -260,7 +260,7 @@ mut:
 
 pub fn (i &ReadableIni) globals(section string) Properties {
 	return Properties{
-		ri: i
+		ri:    i
 		props: i.globals
 	}
 }
@@ -269,7 +269,7 @@ pub fn (i &ReadableIni) section_props(section string) ?Properties {
 	for sect in i.sections {
 		if unsafe { compare_str_within_nochk(section, i.source, sect.name_start, sect.name_end) } == 0 {
 			return Properties{
-				ri: i
+				ri:    i
 				props: sect.props
 			}
 		}

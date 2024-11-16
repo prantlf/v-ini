@@ -23,8 +23,8 @@ pub fn parse_writeable_to(source string, mut i WriteableIni) ! {
 
 pub fn parse_writeable_to_opt(source string, mut i WriteableIni, opts &ParseOpts) ! {
 	mut p := &WriteableParser{
-		opts: unsafe { opts }
-		ri: unsafe { i }
+		opts:   unsafe { opts }
+		ri:     unsafe { i }
 		source: source
 	}
 	parse_contents(mut p, i, opts)!
