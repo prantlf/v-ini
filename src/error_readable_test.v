@@ -82,10 +82,10 @@ fn test_parse_end_after_property_name_2() {
 fn test_parse_unexpected_after_property_name() {
 	parse_readable('test *') or {
 		if err is ParseError {
-			assert err.msg() == 'unexpected "*" encountered when expecting "=" on line 1, column 6'
-			assert err.msg_full() == 'unexpected "*" encountered when expecting "=":
+			assert err.msg() == 'unexpected end encountered when parsing a property name on line 1, column 7'
+			assert err.msg_full() == 'unexpected end encountered when parsing a property name:
  1 | test *
-   |      ^'
+   |       ^'
 		} else {
 			assert false
 		}

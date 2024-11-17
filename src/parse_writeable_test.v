@@ -20,6 +20,13 @@ fn test_parse_global_property_with_whitespace() {
 	assert i.sections.len == 0
 }
 
+fn test_parse_global_property_with_whitespace_in_name() {
+	i := parse_writeable('another answer = 42')!
+	assert i.globals_len() == 1
+	assert i.global_val('another answer')? == '42'
+	assert i.sections_len() == 0
+}
+
 fn test_parse_global_property_with_comments() {
 	i := parse_writeable(';
 answer = 42
