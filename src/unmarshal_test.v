@@ -19,6 +19,26 @@ fn test_unmarshal_global() {
 	assert a.answer == '42'
 }
 
+struct InnerStruct {
+	answer int
+}
+
+struct OuterStruct {
+	inner InnerStruct
+}
+
+fn test_unmarshal_inner_struct() {
+	mut res := unmarshal[OuterStruct]('[inner]
+answer = 42
+')!
+	assert res.inner.answer == 42
+	res = OuterStruct{}
+	unmarshal_to[OuterStruct]('[inner]
+answer = 42
+', mut res)!
+	assert res.inner.answer == 42
+}
+
 struct Opts {
 	tag_prefix   string @[json: 'tag-prefix']
 	body_re      string @[json: 'body-re']

@@ -238,6 +238,23 @@ feature = feat
 	assert res == out
 }
 
+struct InnerStruct {
+	answer int = 42
+}
+
+struct OuterStruct {
+	inner InnerStruct
+}
+
+fn test_marshal_inner_struct() {
+	src := OuterStruct{}
+	res := marshal(src)!
+	out := r'[inner]
+answer = 42
+'
+	assert res == out
+}
+
 struct Opts {
 	tag_prefix   string = 'v' @[json: 'tag-prefix']
 	body_re      string @[json: 'body-re']
