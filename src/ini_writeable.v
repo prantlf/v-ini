@@ -53,14 +53,14 @@ pub fn (i &WriteableIni) section_val(section string, name string) ?string {
 	return none
 }
 
-struct PropsData {
+struct WritablePropsData {
 	props map[string]string
 	keys  []string
 }
 
 fn (i &WriteableIni) get_sect_props(section string) ?voidptr {
 	if sect := i.sections[section] {
-		props_data := &PropsData{
+		props_data := &WritablePropsData{
 			props: sect
 			keys:  sect.keys()
 		}
@@ -71,18 +71,18 @@ fn (i &WriteableIni) get_sect_props(section string) ?voidptr {
 
 @[inline]
 fn (i &WriteableIni) get_props_len(props voidptr) int {
-	props_data := unsafe { &PropsData(props) }
+	props_data := unsafe { &WritablePropsData(props) }
 	return props_data.props.len
 }
 
 @[inline]
 fn (i &WriteableIni) get_prop_name(props voidptr, idx int) string {
-	props_data := unsafe { &PropsData(props) }
+	props_data := unsafe { &WritablePropsData(props) }
 	return props_data.keys[idx]
 }
 
 fn (i &WriteableIni) get_prop_val(props voidptr, name string) ?string {
-	props_data := unsafe { &PropsData(props) }
+	props_data := unsafe { &WritablePropsData(props) }
 	return if val := props_data.props[name] {
 		val
 	} else {

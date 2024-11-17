@@ -304,11 +304,15 @@ pub fn (s &Properties) name_and_val() (string, string) {
 	return s.ri.source[prop.name_start..prop.name_end], s.ri.source[prop.val_start..prop.val_end]
 }
 
+struct ReadablePropsData {
+	props []Property
+}
+
 fn (i &ReadableIni) get_sect_props(section string) ?voidptr {
 	for sect in i.sections {
 		if unsafe { compare_str_within_nochk(section, i.source, sect.name_start, sect.name_end) } == 0 {
-			props := unsafe { &sect.props }
-			return props
+			props_data := &ReadablePropsData{sect.props}
+			return props_data
 		}
 	}
 	return none
@@ -316,19 +320,20 @@ fn (i &ReadableIni) get_sect_props(section string) ?voidptr {
 
 @[inline]
 fn (i &ReadableIni) get_props_len(props voidptr) int {
-	props_arr := &[]Property(props)
-	return props_arr.len
+	props_data := unsafe { &ReadablePropsData(props) }
+	return props_data.props.len
 }
 
 @[inline]
 fn (i &ReadableIni) get_prop_name(props voidptr, idx int) string {
-	props_arr := &[]Property(props)
-	prop := unsafe { props_arr[idx] }
+	props_data := unsafe { &ReadablePropsData(props) }
+	prop := props_data.props[idx]
 	return i.source[prop.name_start..prop.name_end]
 }
 
 fn (i &ReadableIni) get_prop_val(props voidptr, name string) ?string {
-	for prop in &[]Property(props) {
+	props_data := unsafe { &ReadablePropsData(props) }
+	for prop in props_data.props {
 		if unsafe { compare_str_within_nochk(name, i.source, prop.name_start, prop.name_end) } == 0 {
 			return i.source[prop.val_start..prop.val_end]
 		}
