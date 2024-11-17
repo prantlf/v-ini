@@ -55,7 +55,33 @@ pub fn decode_readable_to[T](i &ReadableIni, mut obj T) ! {
 }
 
 pub fn decode_readable_to_opt[T](i &ReadableIni, mut obj T, opts &DecodeOpts) ! {
+	if d.is_enabled() {
+		d.stop_ticking()
+		defer {
+			d.start_ticking()
+		}
+		globs_len := i.globals_len()
+		if globs_len > 0 {
+			globs := if globs_len == 1 {
+				'property'
+			} else {
+				'properties'
+			}
+			d.log_str('decoding ${globs_len} ${globs}')
+		}
+	}
 	decode_props[T, ReadableIni](mut obj, i, i.globals, opts)!
+	if d.is_enabled() {
+		sects_len := i.sections_len()
+		if sects_len > 0 {
+			sects := if sects_len == 1 {
+				'section'
+			} else {
+				'sections'
+			}
+			d.log_str('decoding ${sects_len} ${sects}')
+		}
+	}
 	decode_sects[T, ReadableIni](mut obj, i, opts)!
 }
 
@@ -74,7 +100,33 @@ pub fn decode_writeable_to[T](i &WriteableIni, mut obj T) ! {
 }
 
 pub fn decode_writeable_to_opt[T](i &WriteableIni, mut obj T, opts &DecodeOpts) ! {
+	if d.is_enabled() {
+		d.stop_ticking()
+		defer {
+			d.start_ticking()
+		}
+		globs_len := i.globs_len()
+		if globs_len > 0 {
+			globs := if sects_len == 1 {
+				'property'
+			} else {
+				'properties'
+			}
+			d.log_str('decoding ${globs_len} ${globs}')
+		}
+	}
 	decode_props[T, WriteableIni](mut obj, i, i.globals, opts)!
+	if d.is_enabled() {
+		sects_len := i.sects_len()
+		if sects_len > 0 {
+			sects := if sects_len == 1 {
+				'section'
+			} else {
+				'sections'
+			}
+			d.log_str('decoding ${sects_len} ${sects}')
+		}
+	}
 	decode_sects[T, WriteableIni](mut obj, i, opts)!
 }
 
@@ -132,7 +184,12 @@ fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 			}
 
 			if skip {
+				d.log('skip field "%s"', json_name)
 			} else if val := i.get_prop_val(props, json_name) {
+				if d.is_enabled() {
+					short_val := d.shorten(val)
+					d.log_str('set value "${short_val}" from property "${json_name}" to field "${field.name}"')
+				}
 				ino := nooverflow || opts.ignore_number_overflow
 				$if field.is_option {
 					$if field.is_enum {
@@ -226,7 +283,7 @@ fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 					return error('unsupported type ${type_name(field.typ)} of ${field.name}')
 				}
 			} else if required || opts.require_all_fields {
-				return error('missing "${json_name}" key')
+				return error('missing "${json_name}" property')
 			}
 		}
 	}
@@ -249,12 +306,46 @@ fn decode_sects[T, I](mut typ T, i &I, opts &DecodeOpts) ! {
 			}
 
 			if skip {
+				d.log('skip field "%s"', json_name)
 			} else if props := i.get_sect_props(json_name) {
+				d.log('fill properties from section "%s" to field "%s"', json_name, field.name)
 				mut obj := typ.$(field.name)
 				decode_props(mut obj, i, props, opts)!
 				typ.$(field.name) = obj
 			} else if required || opts.require_all_fields {
-				return error('missing "${json_name}" key')
+				return error('missing "${json_name}" section')
+			}
+		} $else $if field.is_map {
+			mut json_name := field.name
+			mut required := false
+			mut skip := false
+			for attr in field.attrs {
+				if attr.starts_with('json: ') {
+					json_name = attr[6..]
+				} else if attr == 'required' {
+					required = true
+				} else if attr == 'skip' {
+					skip = true
+				}
+			}
+
+			if skip {
+				d.log('skip field "%s"', json_name)
+			} else if props := i.get_sect_props(json_name) {
+				d.log('fill properties from section "%s" to field "%s"', json_name, field.name)
+				$if field.is_option {
+					mut src := &typ.$(field.name)
+					src = props_to_map_option(src, i, props, opts)!
+					typ.$(field.name) = src.move()
+				} $else {
+					mut temp := map[string]string{}
+					// mut src := &temp
+					// mut src := &typ.$(field.name)
+					props_to_map(mut temp, i, props, opts)!
+					typ.$(field.name) = temp.move()
+				}
+			} else if required || opts.require_all_fields {
+				return error('missing "${json_name}" section')
 			}
 		}
 	}
@@ -269,6 +360,7 @@ fn decode_array[T](mut typ []T, text string, split string, opts &DecodeOpts) ! {
 			start, end := avoid_space(item)
 			item[start..end]
 		}
+		d.log('append "%s" to array', val)
 		typ << decode_val[T](val, opts)!
 	}
 }
@@ -292,6 +384,7 @@ fn decode_map[T](_ &map[string]T, text string, split string, entrysplit string, 
 			start_v, end_v := avoid_space(val)
 			val = val[start_v..end_v]
 		}
+		d.log('set value "%s" to key "%s"', val, key)
 		out[key] = decode_val[T](val, opts)!
 	}
 	return out
@@ -301,6 +394,50 @@ fn decode_map[T](_ &map[string]T, text string, split string, entrysplit string, 
 fn decode_map_option[T](_ ?map[string]T, val string, split string, entrysplit string, opts &DecodeOpts) !map[string]T {
 	m := map[string]T{}
 	return decode_map(&m, val, split, entrysplit, opts)!
+}
+
+// fn props_to_map[T, I](mut out map[string]T, i &I, props voidptr, opts &DecodeOpts) ! {
+// 	props_len := i.get_props_len(props)
+// 	for n in 0 .. props_len {
+// 		name := i.get_prop_name(props, n)
+// 		if val := i.get_prop_val(props, name) {
+// 			mut trim_val := val
+// 			if !opts.preserve_whitespace {
+// 				start_v, end_v := avoid_space(val)
+// 				trim_val = val[start_v..end_v]
+// 			}
+// 			if d.is_enabled() {
+// 				short_val := d.shorten(trim_val)
+// 				d.log_str('set value "${short_val}" for key "${name}"')
+// 			}
+// 			out[name] = decode_val[T](trim_val, opts)!
+// 		}
+// 	}
+// }
+
+// @[inline]
+// fn props_to_map_option[T, I](_ ?map[string]T, i &I, props voidptr, opts &DecodeOpts) !map[string]T {
+// 	m := map[string]T{}
+// 	return props_to_map[T, I](&m, i, props, opts)!
+// }
+
+fn props_to_map[I](mut out map[string]string, i &I, props voidptr, opts &DecodeOpts) ! {
+	props_len := i.get_props_len(props)
+	for n in 0 .. props_len {
+		name := i.get_prop_name(props, n)
+		if val := i.get_prop_val(props, name) {
+			mut trim_val := val
+			if !opts.preserve_whitespace {
+				start_v, end_v := avoid_space(val)
+				trim_val = val[start_v..end_v]
+			}
+			if d.is_enabled() {
+				short_val := d.shorten(trim_val)
+				d.log_str('set value "${short_val}" for key "${name}"')
+			}
+			out[name] = trim_val
+		}
+	}
 }
 
 fn decode_val[T](val string, opts &DecodeOpts) !T {
@@ -350,7 +487,7 @@ fn decode_int[T](val string, ignore_overflow bool) !T {
 fn decode_f64(val string, ignore_overflow bool) !f64 {
 	end := unsafe { nil }
 	C.errno = 0
-	num := C.strtod(val.str, &end)
+	num := unsafe { C.strtod(&char(val.str), &charptr(&end)) }
 	if C.errno != 0 {
 		text := if end != unsafe { nil } {
 			unsafe { tos(val.str, &u8(end) - val.str) }

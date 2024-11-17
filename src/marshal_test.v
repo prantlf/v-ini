@@ -201,3 +201,72 @@ fn test_marshal_arrays_custom_split() {
 	assert res == 'string = s; t
 '
 }
+
+struct MapProp {
+	mapping map[string]string
+}
+
+fn test_marshal_map_to_property() {
+	src := MapProp{
+		mapping: {
+			'defect':  'fix'
+			'feature': 'feat'
+		}
+	}
+	res := marshal(src)!
+	out := r'mapping = defect: fix, feature: feat
+'
+	assert res == out
+}
+
+struct MapSection {
+	mapping map[string]string @[json: 'type-mapping'; section]
+}
+
+fn test_marshal_map_to_section() {
+	src := MapSection{
+		mapping: {
+			'defect':  'fix'
+			'feature': 'feat'
+		}
+	}
+	res := marshal(src)!
+	out := r'[type-mapping]
+defect = fix
+feature = feat
+'
+	assert res == out
+}
+
+struct Opts {
+	tag_prefix   string = 'v' @[json: 'tag-prefix']
+	body_re      string @[json: 'body-re']
+	version_re   string            = r'^\s*(?<heading>#+)\s+(?:(?<version>\d+\.\d+\.\d+(?:-[.0-9A-Za-z-]+)?)|(?:\[(?<version>\d+\.\d+\.\d+(?:-[.0-9A-Za-z-]+)?)\])).+\((?<date>[-\d]+)\)\s*$' @[json: 'version-re']
+	prolog       string            = '# Changes'
+	version_tpl  string            = '{heading} [{version}]({repo_url}/compare/{tag_prefix}{prev_version}...{tag_prefix}{version}) ({date})'            @[json: 'version-tpl']
+	logged_types []string          = ['feat', 'fix', 'perf']          @[json: 'logged-types'; split]
+	type_mapping map[string]string = {
+		'defect':  'fix'
+		'feature': 'feat'
+	} @[json: 'type-mapping'; section]
+mut:
+	heading int = 2
+}
+
+fn test_marshal_opts() {
+	opts := Opts{}
+	res := marshal(opts)!
+	out := r'tag-prefix = v
+body-re = 
+version-re = ^\s*(?<heading>#+)\s+(?:(?<version>\d+\.\d+\.\d+(?:-[.0-9A-Za-z-]+)?)|(?:\[(?<version>\d+\.\d+\.\d+(?:-[.0-9A-Za-z-]+)?)\])).+\((?<date>[-\d]+)\)\s*$
+prolog = # Changes
+version-tpl = {heading} [{version}]({repo_url}/compare/{tag_prefix}{prev_version}...{tag_prefix}{version}) ({date})
+logged-types = feat, fix, perf
+heading = 2
+
+[type-mapping]
+defect = fix
+feature = feat
+'
+	assert res == out
+}

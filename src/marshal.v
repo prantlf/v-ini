@@ -87,11 +87,13 @@ pub fn marshal_to_writer_opt[T](source &T, mut writer Writer, opts &MarshalOpts)
 }
 
 pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
+	mut dirty := false
 	$for field in T.fields {
 		mut json_name := field.name
 		mut skip := false
 		mut split := ','
 		mut entrysplit := ':'
+		mut use_section := false
 		for attr in field.attrs {
 			if attr.starts_with('json: ') {
 				json_name = attr[6..]
@@ -105,6 +107,8 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 				entrysplit = ':'
 			} else if attr.starts_with('entrysplit: ') {
 				entrysplit = attr[12..]
+			} else if attr == 'section' {
+				use_section = true
 			}
 		}
 
@@ -113,6 +117,7 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 			$if field.is_option {
 				mut val_opt := typ.$(field.name)
 				if val := val_opt {
+					dirty = true
 					output.write_string(json_name)!
 					output.write_string(' = ')!
 					$if field.is_enum {
@@ -134,44 +139,84 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 					} $else {
 						return error('unsupported type Option(${type_name(field.typ)}) of ${field.name}')
 					}
+					output.write_u8(`\n`)!
 				}
 			} $else {
-				output.write_string(json_name)!
-				output.write_string(' = ')!
-				$if field.is_enum {
-					val := typ.$(field.name)
-					if opts.enums_as_names {
+				if use_section {
+				} else {
+					dirty = true
+					output.write_string(json_name)!
+					output.write_string(' = ')!
+					$if field.is_enum {
+						val := typ.$(field.name)
+						if opts.enums_as_names {
+							output.write_string(val.str())!
+						} else {
+							output.write_string(unsafe { int(val) }.str())!
+						}
+					} $else $if field.typ is int || field.typ is u8 || field.typ is u16
+						|| field.typ is u32 || field.typ is u64 || field.typ is i8
+						|| field.typ is i16 || field.typ is i64 || field.typ is bool {
+						val := typ.$(field.name)
 						output.write_string(val.str())!
-					} else {
-						output.write_string(unsafe { int(val) }.str())!
+					} $else $if field.typ is f32 {
+						val := typ.$(field.name)
+						output.write_string(number32_to_string(val))!
+					} $else $if field.typ is f64 {
+						val := typ.$(field.name)
+						output.write_string(number64_to_string(val))!
+					} $else $if field.typ is string {
+						val := typ.$(field.name)
+						output.write_string(val)!
+					} $else $if field.is_array {
+						arr := typ.$(field.name)
+						marshal_array(arr, split, mut output, opts)!
+					} $else $if field.is_map {
+						src := &typ.$(field.name)
+						marshal_map(src, split, entrysplit, mut output, opts)!
+					} $else {
+						return error('unsupported type ${type_name(field.typ)} of ${field.name}')
 					}
-				} $else $if field.typ is int || field.typ is u8 || field.typ is u16
-					|| field.typ is u32 || field.typ is u64 || field.typ is i8 || field.typ is i16
-					|| field.typ is i64 || field.typ is bool {
-					val := typ.$(field.name)
-					output.write_string(val.str())!
-				} $else $if field.typ is f32 {
-					val := typ.$(field.name)
-					output.write_string(number32_to_string(val))!
-				} $else $if field.typ is f64 {
-					val := typ.$(field.name)
-					output.write_string(number64_to_string(val))!
-				} $else $if field.typ is string {
-					val := typ.$(field.name)
-					output.write_string(val)!
-				} $else $if field.is_array {
-					arr := typ.$(field.name)
-					marshal_array(arr, split, mut output, opts)!
-				} $else $if field.is_map {
-					src := &typ.$(field.name)
-					marshal_map(src, split, entrysplit, mut output, opts)!
-				} $else {
-					return error('unsupported type ${type_name(field.typ)} of ${field.name}')
+					output.write_u8(`\n`)!
 				}
 			}
 		}
+	}
+	$for field in T.fields {
+		mut json_name := field.name
+		mut skip := false
+		mut use_section := false
+		for attr in field.attrs {
+			if attr.starts_with('json: ') {
+				json_name = attr[6..]
+			} else if attr == 'skip' {
+				skip = true
+			} else if attr == 'section' {
+				use_section = true
+			}
+		}
 
-		output.write_u8(`\n`)!
+		if skip {
+		} else {
+			$if field.is_option {
+			} $else {
+				if use_section {
+					$if field.is_map {
+						if dirty {
+							output.write_u8(`\n`)!
+						}
+						output.write_u8(`[`)!
+						output.write_string(json_name)!
+						output.write_u8(`]`)!
+						output.write_u8(`\n`)!
+						src := &typ.$(field.name)
+						map_to_props(src, mut output, opts)!
+					} $else {
+						return error('attribute section is allowed only for maps while ${field.name} is ${type_name(field.typ)}')
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -220,6 +265,15 @@ fn marshal_map[T](typ &map[string]T, split string, entrysplit string, mut output
 		output.write_u8(` `)!
 		marshal_val[T](&value, mut output, opts)!
 		next = true
+	}
+}
+
+fn map_to_props[T](typ &map[string]T, mut output Output, opts &MarshalOpts) ! {
+	for key, value in typ {
+		output.write_string(key)!
+		output.write_string(' = ')!
+		marshal_val[T](&value, mut output, opts)!
+		output.write_u8(`\n`)!
 	}
 }
 
