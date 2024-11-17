@@ -34,7 +34,7 @@ fn (mut p ReadableParser) parse_section(from int) !int {
 	}
 	p.section = &p.ri.sections[p.ri.sections.len - 1]
 	if d.is_enabled() {
-		name := d.shorten(p.source[from..name_end])
+		name := d.shorten(p.source[start..name_end])
 		d.log_str('start section "${name}"')
 	}
 
