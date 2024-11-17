@@ -68,6 +68,16 @@ answer=42')!
 	assert i.sections['test']['answer'] == '42'
 }
 
+fn test_parse_section_with_whitespace_in_name() {
+	i := parse_writeable('[more test]
+answer=42')!
+	assert i.globals_len() == 0
+	assert i.sections_len() == 1
+	assert 'more test' in i.sections
+	assert i.sections['more test'].len == 1
+	assert i.sections['more test']['answer'] == '42'
+}
+
 fn test_parse_section_with_whitespace_and_property() {
 	i := parse_writeable(' [ test ] 
 answer=42')!

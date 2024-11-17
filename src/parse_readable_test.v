@@ -71,6 +71,15 @@ answer=42')!
 	assert i.section_prop_val('test', 'answer')? == '42'
 }
 
+fn test_parse_section_with_whitespace_in_name() {
+	i := parse_readable('[more test]
+answer=42')!
+	assert i.globals_len() == 0
+	assert i.sections_len() == 1
+	assert i.section_props_len('more test')? == 1
+	assert i.section_prop_val('more test', 'answer')? == '42'
+}
+
 fn test_parse_section_with_whitespace_and_property() {
 	i := parse_readable(' [ test ] 
 answer=42')!

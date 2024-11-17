@@ -102,12 +102,16 @@ fn skip_section[P](p &P, from int) !(int, int, int) {
 				if c == `\r` || c == `\n` {
 					return p.fail(next, 'unexpected line break encountered after a section name')
 				}
-				if c != `]` {
-					return p.fail(next, 'unexpected "${rune(c)}" encountered when expecting "]"')
+				if c == `]` {
+					name_end = i
+					i = next
+					break
+				} else {
+					i++
+					if i == p.source.len {
+						return p.fail(i, 'unexpected end encountered when parsing a section name')
+					}
 				}
-				name_end = i
-				i = next
-				break
 			}
 			`\r`, `\n` {
 				return p.fail(i, 'unexpected line break encountered when parsing a section name')
