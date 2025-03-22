@@ -1,5 +1,11 @@
 # Changes
 
+## [0.4.1](https://github.com/prantlf/v-ini/compare/v0.4.0...v0.4.1) (2025-03-22)
+
+### Bug Fixes
+
+* Adapt to breaking changes in the V compiler ([61fc75d](https://github.com/prantlf/v-ini/commit/61fc75d0afe8eced6470aae111aee9d10d3bb679))
+
 ## [0.4.0](https://github.com/prantlf/v-ini/compare/v0.3.5...v0.4.0) (2024-11-17)
 
 ### Features
