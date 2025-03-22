@@ -47,7 +47,7 @@ fn (mut p WriteableParser) parse_property(from int) !int {
 	val_s := d.shorten(val)
 	d.log('set property "%s" to "%s"', name, val_s)
 
-	if p.section.len > 0 {
+	if p.section != '' {
 		p.ri.sections[p.section][name] = val
 	} else {
 		p.ri.globals[name] = val

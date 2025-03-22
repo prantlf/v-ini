@@ -526,7 +526,7 @@ fn decode_bool(val string) !bool {
 }
 
 fn decode_enum[T](_ T, val string, typ int) !T {
-	if val.len > 0 && val[0] >= `0` && val[0] <= `9` {
+	if val != '' && val[0] >= `0` && val[0] <= `9` {
 		num := decode_int[int](val, false)!
 		return unsafe { T(num) }
 	} else {

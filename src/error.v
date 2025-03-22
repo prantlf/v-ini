@@ -32,7 +32,7 @@ pub fn (e &ParseError) msg_full() string {
 	mut builder := strings.new_builder(64)
 	mut line_num := e.line - before.len
 
-	colors := term.can_show_color_on_stderr() && os.getenv('NO_COLOR').len == 0
+	colors := term.can_show_color_on_stderr() && os.getenv('NO_COLOR') == ''
 	mut on := ''
 	mut off := ''
 	if colors {
@@ -101,7 +101,7 @@ fn write_pointer(mut builder strings.Builder, num_len int, head_len int, colors 
 }
 
 fn before_error(input string, offset int) (string, string) {
-	if input.len == 0 {
+	if input == '' {
 		return '', ''
 	}
 
@@ -122,7 +122,7 @@ fn before_error(input string, offset int) (string, string) {
 }
 
 fn after_error(input string, offset int) (string, string) {
-	if input.len == 0 {
+	if input == '' {
 		return '', ''
 	}
 
