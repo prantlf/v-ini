@@ -36,7 +36,7 @@ pub fn decode_to[T, I](i &I, mut obj T) ! {
 }
 
 pub fn decode_to_opt[T, I](i &I, mut obj T, opts &DecodeOpts) ! {
-	decode_props[T, I](mut obj, i, i.globals, opts)!
+	decode_props[T, I](mut obj, i, unsafe { &i.globals }, opts)!
 	decode_sects[T, I](mut obj, i, opts)!
 }
 
@@ -70,7 +70,7 @@ pub fn decode_readable_to_opt[T](i &ReadableIni, mut obj T, opts &DecodeOpts) ! 
 			d.log_str('decoding ${globs_len} ${globs}')
 		}
 	}
-	decode_props[T, ReadableIni](mut obj, i, i.globals, opts)!
+	decode_props[T, ReadableIni](mut obj, i, unsafe { &i.globals }, opts)!
 	if d.is_enabled() {
 		sects_len := i.sections_len()
 		if sects_len > 0 {
@@ -115,7 +115,7 @@ pub fn decode_writeable_to_opt[T](i &WriteableIni, mut obj T, opts &DecodeOpts) 
 			d.log_str('decoding ${globs_len} ${globs}')
 		}
 	}
-	decode_props[T, WriteableIni](mut obj, i, i.globals, opts)!
+	decode_props[T, WriteableIni](mut obj, i, unsafe { &i.globals }, opts)!
 	if d.is_enabled() {
 		sects_len := i.sects_len()
 		if sects_len > 0 {
