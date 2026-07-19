@@ -1,5 +1,11 @@
 # Changes
 
+## [0.5.1](https://github.com/prantlf/v-ini/compare/v0.5.0...v0.5.1) (2026-07-19)
+
+### Bug Fixes
+
+* Fix field attributes without apostrophes ([a922487](https://github.com/prantlf/v-ini/commit/a92248774a1ab3aae9a95f48ba80a9de617f77df))
+
 ## [0.5.0](https://github.com/prantlf/v-ini/compare/v0.4.1...v0.5.0) (2026-07-19)
 
 ### Features
