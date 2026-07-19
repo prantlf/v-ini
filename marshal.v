@@ -36,15 +36,15 @@ fn (mut o WriterOuptut) write_string(s string) ! {
 }
 
 fn (mut o WriterOuptut) write_u8(ch u8) ! {
-	buf := unsafe {
-		array{
-			element_size: int(sizeof(u8))
-			data:         vcalloc(1)
-			len:          1
-			cap:          1
-		}
-	}
-	// buf := [ch]
+	// buf := unsafe {
+	// 	array{
+	// 		element_size: int(sizeof(u8))
+	// 		data:         vcalloc(1)
+	// 		len:          1
+	// 		cap:          1
+	// 	}
+	// }
+	buf := [ch]
 	n := o.writer.write(buf)!
 	if n != 1 {
 		return error('no bytes from 1 were written')
@@ -96,17 +96,17 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 		mut use_section := false
 		for attr in field.attrs {
 			if attr.starts_with('json: ') {
-				json_name = attr[6..]
+				json_name = attr[7..(attr.len - 1)]
 			} else if attr == 'skip' {
 				skip = true
 			} else if attr == 'split' {
 				split = ','
 			} else if attr.starts_with('split: ') {
-				split = attr[7..]
+				split = attr[8..(attr.len - 1)]
 			} else if attr == 'entrysplit' {
 				entrysplit = ':'
 			} else if attr.starts_with('entrysplit: ') {
-				entrysplit = attr[12..]
+				entrysplit = attr[13..(attr.len - 1)]
 			} else if attr == 'section' {
 				use_section = true
 			}
@@ -191,7 +191,7 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 		mut use_section := false
 		for attr in field.attrs {
 			if attr.starts_with('json: ') {
-				json_name = attr[6..]
+				json_name = attr[7..(attr.len - 1)]
 			} else if attr == 'skip' {
 				skip = true
 			} else if attr == 'section' {
@@ -246,17 +246,17 @@ pub fn marshal_struct[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 		mut use_section := false
 		for attr in field.attrs {
 			if attr.starts_with('json: ') {
-				json_name = attr[6..]
+				json_name = attr[7..(attr.len - 1)]
 			} else if attr == 'skip' {
 				skip = true
 			} else if attr == 'split' {
 				split = ','
 			} else if attr.starts_with('split: ') {
-				split = attr[7..]
+				split = attr[8..(attr.len - 1)]
 			} else if attr == 'entrysplit' {
 				entrysplit = ':'
 			} else if attr.starts_with('entrysplit: ') {
-				entrysplit = attr[12..]
+				entrysplit = attr[13..(attr.len - 1)]
 			} else if attr == 'section' {
 				use_section = true
 			}
@@ -334,7 +334,7 @@ pub fn marshal_struct[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 	}
 }
 
-fn marshal_val[T](val &T, mut output Output, opts &MarshalOpts) ! {
+fn marshal_val[T](val T, mut output Output, opts &MarshalOpts) ! {
 	$if T is $enum {
 		if opts.enums_as_names {
 			output.write_string(val.str())!
@@ -362,7 +362,7 @@ fn marshal_array[T](typ []T, split string, mut output Output, opts &MarshalOpts)
 			output.write_string(split)!
 			output.write_u8(` `)!
 		}
-		marshal_val[T](&item, mut output, opts)!
+		marshal_val[T](item, mut output, opts)!
 		next = true
 	}
 }
@@ -377,7 +377,7 @@ fn marshal_map[T](typ &map[string]T, split string, entrysplit string, mut output
 		output.write_string(key)!
 		output.write_string(entrysplit)!
 		output.write_u8(` `)!
-		marshal_val[T](&value, mut output, opts)!
+		marshal_val[T](value, mut output, opts)!
 		next = true
 	}
 }
@@ -386,7 +386,7 @@ fn map_to_props[T](typ &map[string]T, mut output Output, opts &MarshalOpts) ! {
 	for key, value in typ {
 		output.write_string(key)!
 		output.write_string(' = ')!
-		marshal_val[T](&value, mut output, opts)!
+		marshal_val[T](value, mut output, opts)!
 		output.write_u8(`\n`)!
 	}
 }

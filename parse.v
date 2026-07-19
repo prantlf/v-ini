@@ -211,6 +211,7 @@ fn skip_property[P](p &P, from int) !(int, int, int, int) {
 					}
 				}
 			}
+
 			i++
 		}
 		if last_space > 0 {

@@ -102,7 +102,9 @@ fn test_marshal_enum_as_int() {
 	src := OptionalTypes{
 		h: .woman
 	}
-	res := marshal_opt(src, &MarshalOpts{ enums_as_names: false })!
+	res := marshal_opt(src, &MarshalOpts{
+		enums_as_names: false
+	})!
 	assert res == 'h = 1
 '
 }

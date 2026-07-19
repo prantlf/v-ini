@@ -115,14 +115,18 @@ fn test_parse_whitespace_val() {
 }
 
 fn test_parse_preserving_whitespace() {
-	i := parse_readable_opt('answer= ', &ParseOpts{ preserve_whitespace: true })!
+	i := parse_readable_opt('answer= ', &ParseOpts{
+		preserve_whitespace: true
+	})!
 	assert i.globals_len() == 1
 	assert i.global_val('answer')? == ' '
 	assert i.sections_len() == 0
 }
 
 fn test_parse_preserving_whitespace_around() {
-	i := parse_readable_opt('answer= 42 ', &ParseOpts{ preserve_whitespace: true })!
+	i := parse_readable_opt('answer= 42 ', &ParseOpts{
+		preserve_whitespace: true
+	})!
 	assert i.globals_len() == 1
 	assert i.global_val('answer')? == ' 42 '
 	assert i.sections_len() == 0
