@@ -139,7 +139,11 @@ fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 				mut skip := false
 				for attr in field.attrs {
 					if attr.starts_with('json: ') {
-						json_name = attr[7..(attr.len - 1)]
+						json_name = if attr[6] == `'` {
+							attr[7..(attr.len - 1)]
+						} else {
+							attr[6..]
+						}
 					} else if attr == 'skip' {
 						skip = true
 					}
@@ -165,7 +169,11 @@ fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 			mut nooverflow := false
 			for attr in field.attrs {
 				if attr.starts_with('json: ') {
-					json_name = attr[7..(attr.len - 1)]
+					json_name = if attr[6] == `'` {
+						attr[7..(attr.len - 1)]
+					} else {
+						attr[6..]
+					}
 				} else if attr == 'required' {
 					required = true
 				} else if attr == 'skip' {
@@ -173,11 +181,19 @@ fn decode_props[T, I](mut typ T, i &I, props voidptr, opts &DecodeOpts) ! {
 				} else if attr == 'split' {
 					split = ','
 				} else if attr.starts_with('split: ') {
-					split = attr[8..(attr.len - 1)]
+					split = if attr[7] == `'` {
+						attr[8..(attr.len - 1)]
+					} else {
+						attr[7..]
+					}
 				} else if attr == 'entrysplit' {
 					entrysplit = ':'
 				} else if attr.starts_with('entrysplit: ') {
-					entrysplit = attr[13..(attr.len - 1)]
+					entrysplit = if attr[12] == `'` {
+						attr[13..(attr.len - 1)]
+					} else {
+						attr[12..]
+					}
 				} else if attr == 'nooverflow' {
 					nooverflow = true
 				}
@@ -297,7 +313,11 @@ fn decode_sects[T, I](mut typ T, i &I, opts &DecodeOpts) ! {
 			mut skip := false
 			for attr in field.attrs {
 				if attr.starts_with('json: ') {
-					json_name = attr[7..(attr.len - 1)]
+					json_name = if attr[6] == `'` {
+						attr[7..(attr.len - 1)]
+					} else {
+						attr[6..]
+					}
 				} else if attr == 'required' {
 					required = true
 				} else if attr == 'skip' {
@@ -321,7 +341,11 @@ fn decode_sects[T, I](mut typ T, i &I, opts &DecodeOpts) ! {
 			mut skip := false
 			for attr in field.attrs {
 				if attr.starts_with('json: ') {
-					json_name = attr[7..(attr.len - 1)]
+					json_name = if attr[6] == `'` {
+						attr[7..(attr.len - 1)]
+					} else {
+						attr[6..]
+					}
 				} else if attr == 'required' {
 					required = true
 				} else if attr == 'skip' {

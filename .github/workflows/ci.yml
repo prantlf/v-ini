@@ -43,7 +43,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v7
-    - uses: prantlf/publish-release-action@v1
+    - uses: prantlf/publish-release-action@v2
       with:
         no-archives: true
       env:

@@ -96,17 +96,29 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 		mut use_section := false
 		for attr in field.attrs {
 			if attr.starts_with('json: ') {
-				json_name = attr[7..(attr.len - 1)]
+				json_name = if attr[6] == `'` {
+					attr[7..(attr.len - 1)]
+				} else {
+					attr[6..]
+				}
 			} else if attr == 'skip' {
 				skip = true
 			} else if attr == 'split' {
 				split = ','
 			} else if attr.starts_with('split: ') {
-				split = attr[8..(attr.len - 1)]
+				split = if attr[7] == `'` {
+					attr[8..(attr.len - 1)]
+				} else {
+					attr[7..]
+				}
 			} else if attr == 'entrysplit' {
 				entrysplit = ':'
 			} else if attr.starts_with('entrysplit: ') {
-				entrysplit = attr[13..(attr.len - 1)]
+				entrysplit = if attr[12] == `'` {
+					attr[13..(attr.len - 1)]
+				} else {
+					attr[12..]
+				}
 			} else if attr == 'section' {
 				use_section = true
 			}
@@ -191,7 +203,11 @@ pub fn marshal_out[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 		mut use_section := false
 		for attr in field.attrs {
 			if attr.starts_with('json: ') {
-				json_name = attr[7..(attr.len - 1)]
+				json_name = if attr[6] == `'` {
+					attr[7..(attr.len - 1)]
+				} else {
+					attr[6..]
+				}
 			} else if attr == 'skip' {
 				skip = true
 			} else if attr == 'section' {
@@ -246,17 +262,29 @@ pub fn marshal_struct[T](typ &T, mut output Output, opts &MarshalOpts) ! {
 		mut use_section := false
 		for attr in field.attrs {
 			if attr.starts_with('json: ') {
-				json_name = attr[7..(attr.len - 1)]
+				json_name = if attr[6] == `'` {
+					attr[7..(attr.len - 1)]
+				} else {
+					attr[6..]
+				}
 			} else if attr == 'skip' {
 				skip = true
 			} else if attr == 'split' {
 				split = ','
 			} else if attr.starts_with('split: ') {
-				split = attr[8..(attr.len - 1)]
+				split = if attr[7] == `'` {
+					attr[8..(attr.len - 1)]
+				} else {
+					attr[7..]
+				}
 			} else if attr == 'entrysplit' {
 				entrysplit = ':'
 			} else if attr.starts_with('entrysplit: ') {
-				entrysplit = attr[13..(attr.len - 1)]
+				entrysplit = if attr[12] == `'` {
+					attr[13..(attr.len - 1)]
+				} else {
+					attr[12..]
+				}
 			} else if attr == 'section' {
 				use_section = true
 			}
